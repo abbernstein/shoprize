@@ -1,0 +1,19 @@
+﻿.image {
+    width: 100px;
+    height: 100px;
+    -ms-background-size: contain;
+    background-size: contain;
+    background-repeat: no-repeat;
+    float: right;
+    margin: 0 0 10px 10px;
+}
+
+.image-cover {
+    color: #FFF;
+    display: none;
+    position: absolute;
+}
+
+.image-wrapper:hover .image-cover {
+    display: block;
+}

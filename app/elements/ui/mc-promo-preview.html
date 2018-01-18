@@ -1,0 +1,102 @@
+<link rel="link" href="../../bower_components/polymer/polymer.html">
+<link rel="link" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="link" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="link" href="mc-ui-base.html">
+
+<polymer-element name="mc-promo-preview" extends="mc-ui-base" attributes="imageUrl offer description code">
+    <template>
+        
+        <style>
+            :host {
+                margin: 0 0 20px 20px;
+                float: left;
+                width: 402px;
+                height: 683px;
+                background-image: url('../../images/bg_promo_preview.png');
+            }
+
+            #wrapper {
+                position: relative;
+                width: 307px;
+                height: 545px;
+                overflow: hidden;
+                background-color: #e1e1e1;
+                right: 47px;
+                top: 55px;
+            }
+
+            #offer {
+                font-size: 1.4em;
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+
+            #description {
+                font-size: 0.8em;
+            }
+
+            #imageWrapper {
+                background-color: #FFF;
+                border: #9C9C9C solid 1px;
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+
+                #imageWrapper #image {
+                    height: 160px;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    -ms-background-size: contain;
+                    background-size: contain;
+                }
+
+            #wrapper-container #code {
+                text-align: center;
+                margin: 0 0 1em 0;
+                font-size: 1.4em;
+            }
+
+            #wrapper-container #code_label {
+                text-align: center;
+                margin-top: 1em;
+                font-size: .8em;
+            }
+
+            #wrapper-container {
+                padding: 8px;
+            }
+
+                #wrapper-container #storeName {
+                    text-align: center;
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin: 10px 0;
+                }
+
+
+
+        </style>
+
+        <div id="wrapper" layout vertical>
+            <div id="wrapper-container">
+                <div id="storeName">{{getCookie('storeName')}}</div>
+
+                <div id="imageWrapper">
+                    <div id="image" style="background-image:url({{imageUrl}})"></div>
+                </div>
+
+                <div id="offer">{{offer}}</div>
+                <div id="description">{{description}}</div>
+                
+            </div>
+        </div>
+
+    </template>
+    <script>
+        Polymer('mc-promo-preview', {
+            editPromo:function(){
+                this.fire("showPromoEdit");
+            }
+        });
+    </script>
+</polymer-element>

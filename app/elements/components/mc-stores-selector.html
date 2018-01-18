@@ -1,0 +1,60 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+
+<link rel="import" href="../ui/mc-app-themes.html" />
+<link rel="import" href="../ui/mc-ui-base.html"/>
+
+<polymer-element name="mc-stores-selector" extends="mc-ui-base" attributes="selectedStore error">
+    <template>
+        <core-style ref="main-theme"></core-style>
+        <div class="form-group">
+            <label class="control-label">[[$$('store.storeName')]]</label>
+            <core-dropdown-menu hidden?="{{isLoading}}" halign="right" id="storeDropdown" valueattr="value" on-core-select="{{onStoreSelected}}">
+                <template repeat="{{store in stores}}">
+                    <core-item label="{{store.Name}}" value="{{store.StoreId}}"></core-item>
+                </template>
+            </core-dropdown-menu>
+            <span class="field-error">{{error}}</span>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            stores: [],
+            selectedStore: {},
+            isLoading: false,
+            publish: {
+                loadStores: function(selectedStore) {
+                    var self = this;
+                    self.isLoading = true;
+                    this.ajaxGo({
+                        url: 'api/stores/merchant',
+                        method: 'GET',
+                        responseCallback: function(e) {
+                            this.stores = e.detail.response;
+                            if (selectedStore) {
+                                this.selectedStore = selectedStore;
+                            }
+                            self.isLoading = false;
+                        }
+                    });
+                }
+            },
+
+            selectedStoreChanged: function(e) {
+
+            },
+
+            onStoreSelected: function(e, detail) {
+                this.error = '';
+                if (detail.isSelected) {
+                    if (this.stores.length > 0) {
+                        for (var i = 0; i < this.stores.length; i++) {
+                            if (this.stores[i].StoreId === this.$.storeDropdown.selected) {
+                                this.selectedStore = this.stores[i];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</polymer-element>

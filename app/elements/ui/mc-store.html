@@ -1,0 +1,100 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../../bower_components/core-item/core-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-down.html">
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/cascade-transition.html">
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-from-bottom.html">
+<link rel="import" href="../../bower_components/core-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/core-icons/device-icons.html">
+<link rel="import" href="mc-ui-base.html">
+<link rel="import" href="mc-store-basic.html">
+<link rel="import" href="mc-store-beacons.html">
+
+<polymer-element name="mc-store" extends="mc-ui-base">
+
+    <template>
+        
+        <core-header-panel fit mode="seamed">
+            <core-toolbar class="teal-bg medium-tall" mode="seamed" hero hero-id="hero.toolbar.store">
+                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <span flex>Store settings</span>
+            </core-toolbar>
+            <section class="content-section" cross-fade horizontal layout hero hero-id="hero.content.store">
+
+                <div class="with-right-margin" layout vertical flex one>
+                    <core-menu class="side-menu" selected="{{selected}}">
+                        <paper-item name="basicInfo" icon="list" label="Basic Info"></paper-item>
+                        <paper-item name="beacons" icon="device:wifi-tethering" label="Beacons"></paper-item>
+                    </core-menu>
+                </div>
+                <div layout vertical flex three>
+                    <core-animated-pages flex selected="{{selected}}" transitions="cross-fade slide-from-bottom">
+                        <mc-store-basic store="{{store}}" name="basicInfo" id="basicInfo" flex slide-from-bottom></mc-store-basic>
+                        <mc-store-beacons store="{{store}}" name="beacons" id="beacons" flex slide-from-bottom></mc-store-beacons>
+                    </core-animated-pages>
+                </div>
+            </section>
+        </core-header-panel>
+
+    </template>
+
+    <script>
+        Polymer('mc-store', {
+            store: {},
+            selected: 'basicInfo',
+            beaconIdToDelete: "",
+            showDashboard: function () {
+                this.fire('showDashboard');
+            },
+            loadData: function () {
+                this.super();
+                this.ajaxGo({
+                    url: 'api/merchant/brief',
+                    method: 'GET',
+                    responseCallback: function(e){
+                        this.store = e.detail.response;
+                    }
+                });
+            },
+
+            eventDelegates: {
+                'deleteBeacon': 'deleteBeacon',
+                'addBeacon': 'addBeacon'
+            },
+
+            addBeacon: function (e, detail, sender) {
+                this.ajaxGo({
+                    url: 'api/merchant/beacon',
+                    method: 'POST',
+                    body: JSON.stringify(detail),
+                    responseCallback: function (e) {
+                        this.store.Beacons.push(e.detail.response);
+                        this.$.beacons.closeAddForm();
+                    }
+                });
+            },
+
+            deleteBeacon: function (e, details, sender) {
+                this.beaconIdToDelete = details.BeaconId;
+                this.ajaxGo({
+                    url: 'api/merchant/beacon/' + details.BeaconId,
+                    method: 'DELETE',
+                    responseCallback: function (e) {
+                        for (var i = 0; i < this.store.Beacons.length; i++) {
+                            if (this.store.Beacons[i].BeaconId === this.beaconIdToDelete) {
+                                this.store.Beacons.splice(i, 1);
+                            }
+                        }
+                    }
+                }, false);
+            }
+        });
+    </script>
+
+</polymer-element>

@@ -1,0 +1,75 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html" />
+<link rel="import" href="../../bower_components/core-icons/core-icons.html" />
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html" />
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-from-bottom.html" />
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html" />
+<link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html" />
+<link rel="import" href="../../bower_components/core-icons/device-icons.html" />
+<link rel="import" href="../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="mc-promo-list.html">
+<polymer-element name="mc-deals" extends="mc-ui-base" vertical layout>
+    <template>
+        <style>
+            :host {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+        </style>
+
+        <core-header-panel fit mode="seamed">
+            <core-toolbar class="medium-tall purple-bg" hero hero-id="hero.toolbar.deals">
+                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <span flex>[[$$('dashboard.deals')]]</span>
+            </core-toolbar>
+
+            <section class="content-section" cross-fade layout horizontal flex hero hero-id="hero.content.deals">
+
+                <section class="with-right-margin" flex one layout vertical>
+                    <core-menu id="sideMenu" class="side-menu" selected="{{selected}}">
+                        <paper-item name="active" icon="check" label="[[$$('promo.active')]]"></paper-item>
+                        <paper-item name="pending" icon="info-outline" label="[[$$('promo.drafts')]]"></paper-item>
+                        <paper-item name="expired" icon="device:access-time" label="[[$$('promo.expired')]]"></paper-item>
+                    </core-menu>
+                </section>
+
+                <section flex three layout vertical>
+                    <core-animated-pages selected="{{selected}}" flex transitions="cross-fade slide-from-bottom">
+                        <mc-promo-list id="active" name="active" type="deal" status="public" flex slide-from-bottom></mc-promo-list>
+                        <mc-promo-list id="pending" name="pending" type="deal" status="draft" flex slide-from-bottom></mc-promo-list>
+                        <mc-promo-list id="expired" name="expired" type="deal" status="expired" flex slide-from-bottom></mc-promo-list>
+                    </core-animated-pages>
+                </section>
+
+            </section>
+        </core-header-panel>
+
+        <paper-fab class="main-action-button" cross-fade slide-from-bottom icon="add" on-tap="{{showPromoAdd}}"></paper-fab>
+
+    </template>
+    <script>
+        Polymer('mc-deals', {
+
+            loadData:function() {
+                this.super();
+                this.$.active.loadData();
+                this.$.pending.loadData();
+                this.$.expired.loadData();
+            },
+
+            showDashboard: function () {
+                this.fire("showDashboard");
+            },
+
+            showPromoAdd: function () {
+                this.fire("showPromoEdit", { type: "deal", action: "add" });
+            }
+        });
+    </script>
+</polymer-element>

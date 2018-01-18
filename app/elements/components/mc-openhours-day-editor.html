@@ -1,0 +1,118 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html" />
+<link rel="import" href="../../bower_components/paper-item/paper-item.html" />
+<link rel="import" href="../ui/mc-app-themes.html" />
+<link rel="import" href="../ui/mc-ui-base.html" />
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html" />
+<link rel="import" href="mc-time-slider.html" />
+<polymer-element name="mc-openhours-day-editor" extends="mc-ui-base" attributes="label hours">
+    <template>
+
+        <core-style ref="main-theme"></core-style>
+
+        <style>
+
+            :host {
+                margin-bottom: 12px;
+            }
+
+            paper-slider {
+                width: 100%;
+                margin-right: 24px;
+            }
+
+            .expanded{
+                background-color: #EEE;
+                padding: 12px;
+            }
+
+            .desc {
+                color: #999;
+            }
+
+        </style>
+
+                   
+            <div vertical horizontal>
+
+                <div layout horizontal center>
+                    <paper-checkbox checked="{{enabled}}" label="{{label}}"></paper-checkbox>
+                    <label class="desc" hidden?="{{enabled}}">[[$$('store.close')]]</label>
+                </div>
+                <div hidden?="{{!enabled}}" layout horizontal class="expanded">
+                    <div layout vertical flex class="with-right-margin">
+                        <label>[[$$('promo.from')]]</label>
+                        <paper-input type="time" value="{{start}}"></paper-input>
+                    </div>
+                    <div layout vertical flex>
+                        <label>[[$$('promo.to')]]</label>
+                        <paper-input type="time" value="{{end}}"></paper-input>
+                    </div>
+                </div>
+            </div>
+
+    </template>
+
+
+    <script>
+        Polymer({
+            start: "09:00",
+            end: "18:00",
+            enabled: false,
+
+
+            publish: {
+                setHours: function (value) {
+                    this.enabled = false;
+                    if (value) {
+                        var minStrings = value.split(',');
+                        if (minStrings.length == 2) {
+                            if (minStrings[0] != minStrings[1]) {
+                                this.start = this.convertMinutesToTime(parseInt(minStrings[0]));
+                                this.end = this.convertMinutesToTime(parseInt(minStrings[1]));
+                                this.enabled = true;
+                            } else {
+                                this.enabled = false;
+                            }
+                        }
+                    }
+                },
+
+                getHours: function () {
+                    if (this.enabled)
+                        return this.convertTimeToMinutes(this.start) + "," + this.convertTimeToMinutes(this.end);
+                    return "0,0";
+                }
+            },
+
+            convertTimeToMinutes: function (timeString) {
+                if (!timeString) {
+                    return 0;
+                }
+
+                var digits = timeString.split(':');
+                if (digits.length != 2) {
+                    return 0;
+                }
+
+                return parseInt(digits[0]) * 60 + parseInt(digits[1]);
+
+            },
+
+            convertMinutesToTime: function (mins) {
+                var hourString = Math.floor(mins / 60).toString();
+                if (hourString.length == 1) {
+                    hourString = "0" + hourString;
+                }
+
+                var minString = (mins % 60).toString();
+                if (minString.length == 1) {
+                    minString = "0" + minString;
+                }
+
+                return hourString + ":" + minString;
+            }
+        });
+    </script>
+</polymer-element>

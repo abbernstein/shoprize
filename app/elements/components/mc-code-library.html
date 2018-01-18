@@ -1,0 +1,53 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<polymer-element name="mc-code-library">
+
+    <script>
+        Polymer({
+            publish: {
+                addDate: function(oldDate, offset, offsetType) {
+                    var year = parseInt(oldDate.getFullYear());
+                    var month = parseInt(oldDate.getMonth());
+                    var date = parseInt(oldDate.getDate());
+                    var hour = parseInt(oldDate.getHours());
+                    offset = parseInt(offset);
+                    var newDate = "";
+
+                    switch (offsetType) {
+                    case "Y":
+                    case "y":
+                        var newYear = year + offset;
+                        newDate = new Date(newYear, month, date, hour);
+                        break;
+
+                    case "M":
+                    case "m":
+                        var newMonth = month + offset;
+                        newDate = new Date(year, newMonth, date, hour);
+                        break;
+
+                    case "D":
+                    case "d":
+                        newDate = new Date(year, month, date + offset, hour);
+                        break;
+
+                    case "H":
+                    case "h":
+                        newDate = new Date(year, month, date, hour + offset);
+                        break;
+                    }
+                    return newDate;
+                },
+
+                formatDate: function(date) {
+                    var year = date.getFullYear().toString();
+                    var month = (date.getMonth() + 1).toString();
+                    var day = date.getDate().toString();
+
+                    return year + "-" + (month[1] ? month : "0" + month[0]) + "-" + (day[1] ? day : "0" + day[0]);
+                }
+            }
+        });
+    </script>
+
+</polymer-element>

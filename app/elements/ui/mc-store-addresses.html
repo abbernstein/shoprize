@@ -1,0 +1,365 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="mc-ui-base.html" />
+<link rel="import" href="mc-store-beacons-item.html" />
+<link rel="import" href="../components/mc-openhours-week-editor.html" />
+
+<polymer-element name="mc-store-addresses" extends="mc-ui-base" attributes="store">
+
+    <template>
+
+        <style>
+        :host {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        #address_list core-item {
+            padding: 12px;
+        }
+        #address_list core-item h3 {
+            margin: 0;
+            -ms-word-break: break-all;
+            -moz-word-break: break-all;
+            -o-word-break: break-all;
+            word-break: break-all;
+        }
+        #address_list core-item p {
+            margin: 0;
+        }
+        #address_list core-item.core-selected {
+            background-color: #666;
+            color: #FFF;
+        }
+        #address_list core-item.core-selected p {
+            font-weight: normal;
+        }
+        #addBeaconDialog {
+            width: 400px;
+        }
+        .beacon {
+            margin: 0 0 12px 12px;
+            float: right;
+        }
+        </style>
+
+        <div layout horizontal cross-fade>
+
+            <div flex one vertical layout class="with-right-margin" cross-fade>
+                <div layout horizontal>
+                    <paper-icon-button icon="add" label="Add Address" on-tap="{{showAddAddressDialog}}"></paper-icon-button>
+                </div>
+                <core-menu id="address_list" on-core-select="{{onAddressSelected}}" selected="{{selected}}">
+                    <template repeat="{{address in store.Addresses}}">
+                        <core-item>
+                            <div vertical layout>
+                                <h3>{{address.Name}}</h3>
+                                <p>{{address.MallName}}</p>
+                            </div>
+                        </core-item>
+                    </template>
+                </core-menu>
+            </div>
+            <div flex three horizontal layout cross-fade>
+                <div flex vertical layout>
+                    <section class="paper-section">
+                        <paper-shadow z="1"></paper-shadow>
+                        <paper-input id="name" label="[[$$('store.name')]]" floatinglabel></paper-input>
+                        <div class="form-group">
+                            <label class="control-label">[[$$('store.mall')]]</label>
+                            <core-dropdown-menu required="true" halign="right" id="mallAddressId" class="transparent" selected="{{selectedMall}}">
+                                <template repeat="{{malls}}">
+                                    <core-item label="{{Name}}"></core-item>
+                                </template>
+                            </core-dropdown-menu>
+                        </div>
+                        <paper-input id="address" label="[[$$('store.address')]]" floatinglabel></paper-input>
+                        <paper-input id="phone" label="[[$$('store.phone')]]" floatinglabel></paper-input>
+
+                        <div class="form-group">
+                            <paper-checkbox checked="{{setOpenHours}}" label="[[$$('store.setOpenHours')]]"></paper-checkbox>
+                            <mc-openhours-week-editor id="openHours" hidden?="{{!setOpenHours}}"></mc-openhours-week-editor>
+                        </div>
+
+
+                        <div layout horizontal class="action-bar">
+                            <paper-button on-tap="{{saveAddress}}">[[$$('misc.submit')]]</paper-button>
+                            <span flex></span>
+                            <paper-icon-button icon="delete" on-tap="{{showDeleteAddressDialog}}"></paper-icon-button>
+                        </div>
+                    </section>
+
+                    <h3>[[$$('store.beacons')]]</h3>
+
+                    <div>
+                        <template repeat="{{beacon in selectedAddress.Beacons}}">
+                            <div class="paper-section beacon">
+                                <paper-shadow id="shadow" z="1"></paper-shadow>
+                                <div vertical layout>
+                                    <div horizontal layout center>
+                                        <label class="type" flex>{{beacon.Type}}</label>
+                                        <paper-icon-button on-tap="{{deleteBeacon}}" data-id="{{beacon.BeaconId}}" id="closeButton" icon="clear"></paper-icon-button>
+                                    </div>
+                                    <label>{{beacon.AssignedId}}</label>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div layout horizontal class="action-bar">
+                        <paper-icon-button icon="add" on-tap="{{showAddBeaconDialog}}"></paper-icon-button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <paper-dialog id="addBeaconDialog">
+            <div class="form-group">
+                <core-dropdown-menu halign="right" id="beaconType" valueattr="label">
+                    <core-item label="iBeacon"></core-item>
+                    <core-item label="WiFi"></core-item>
+                </core-dropdown-menu>
+            </div>
+            <div class="form-group">
+                <paper-input label="WIFI SSID / iBeacon UDID" id="beaconId" floatinglabel></paper-input>
+            </div>
+            <paper-button on-tap="{{addBeacon}}" affirmative autofocus>[[$$('misc.submit')]]</paper-button>
+            <paper-button dismissive>[[$$('misc.back')]]</paper-button>
+        </paper-dialog>
+
+        <paper-dialog id="deleteBeaconDialog">
+            <p>[[$$('store.beaconDeleteConfirm')]]</p>
+            <paper-button on-tap="{{deleteBeaconConfirmed}}" affirmative autofocus>[[$$('misc.confirm')]]</paper-button>
+            <paper-button dismissive>[[$$('misc.back')]]</paper-button>
+        </paper-dialog>
+
+        <paper-dialog id="addAddressDialog">
+            <paper-input id="newAddressName" label="[[$$('store.name')]]" floatinglabel></paper-input>
+            <div class="form-group">
+                <label class="control-label">[[$$('store.mall')]]</label>
+                <core-dropdown-menu halign="right" id="newAddressMallId" class="transparent" valueattr="value">
+                    <template repeat="{{malls}}">
+                        <core-item label="{{Name}}" value="{{MallId}}"></core-item>
+                    </template>
+                </core-dropdown-menu>
+                <span class="field-error">{{newAddressMallIdError}}</span>
+            </div>
+
+            <paper-input id="newAddressAddress" label="[[$$('store.address')]]" floatinglabel></paper-input>
+            <paper-input id="newAddressPhone" label="[[$$('store.phone')]]" floatinglabel></paper-input>
+            <div layout horizontal>
+                <paper-button on-tap="{{addAddress}}" autofocus>[[$$('misc.submit')]]</paper-button>
+                <paper-button on-tap="{{hideAddAddressDialog}}">[[$$('misc.back')]]</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog id="deleteAddressDialog">
+            <p>[[$$('store.addressDeleteConfirm')]]</p>
+            <paper-button on-tap="{{deleteAddressConfirmed}}" affirmative>[[$$('misc.confirm')]]</paper-button>
+            <paper-button dismissive>[[$$('misc.cancel')]]</paper-button>
+
+        </paper-dialog>
+
+    </template>
+
+    <script>
+    Polymer({
+        newAddressMallIdError: '',
+        selectedPage: 0,
+        selected: 0,
+        selectedAddress: {},
+        selectedMall: null,
+        malls: [],
+        publish: {
+            loadMalls: function() {
+                this.ajaxGo({
+                    url: 'api/malls/nearby?radius=0',
+                    method: 'GET',
+                    responseCallback: function(e) {
+                        this.malls = e.detail.response;
+                        if (this.malls.length > 0) {
+                            for (var i = 0; i < this.malls.length; i++) {
+                                if (this.malls[i].MallId === this.selectedAddress.MallId) {
+                                    this.selectedMall = i;
+                                }
+                            }
+                        }
+                    }
+                }, false);
+            }
+        },
+
+        onAddressSelected: function(e, detail) {
+            if (detail.isSelected) {
+                this.selectedAddress = this.store.Addresses[this.selected];
+                this.showAddressDetails(this.selectedAddress);
+            }
+        },
+
+        showAddressDetails: function(address) {
+            this.$.name.value = address.Name;
+            this.$.address.value = address.Address;
+            this.$.phone.value = address.Phone;
+
+            if (address.openHours && address.OpenHours.split("|").length == 7) {
+                this.setOpenHours = true;
+                this.$.openHours.setOpenHours(address.OpenHours);
+            } else {
+                this.setOpenHours = false;
+            }
+
+            for (var i = 0; i < this.malls.length; i++) {
+                if (this.malls[i].MallId === address.MallId) {
+                    this.selectedMall = i;
+                }
+            }
+        },
+
+        showAddBeaconDialog: function() {
+            this.$.addBeaconDialog.toggle();
+            this.$.beaconType.selected = "";
+            this.$.beaconId.value = "";
+        },
+
+        addBeacon: function() {
+            var data = {};
+            data.AddressId = this.selectedAddress.AddressId;
+            data.Type = this.$.beaconType.selected;
+            data.AssignedId = this.$.beaconId.value;
+            this.ajaxGo({
+                url: 'api/beacons/merchant',
+                method: 'POST',
+                body: JSON.stringify(data),
+                responseCallback: function(e) {
+                    var beacon = e.detail.response;
+                    this.selectedAddress.Beacons.push(beacon);
+                }
+            });
+        },
+
+        deleteBeacon: function(e, detail, sender) {
+            this.beaconIdToBeDeleted = sender.attributes["data-id"].value;
+            this.$.deleteBeaconDialog.toggle();
+        },
+
+        beaconIdToBeDeleted: '',
+
+        deleteBeaconConfirmed: function() {
+            this.ajaxGo({
+                url: 'api/merchant/beacon/' + this.beaconIdToBeDeleted,
+                method: 'DELETE',
+                responseCallback: function(e) {
+                    for (var i = 0; i < this.selectedAddress.Beacons.length; i++) {
+                        if (this.selectedAddress.Beacons[i].BeaconId === this.beaconIdToBeDeleted) {
+                            this.selectedAddress.Beacons.splice(i, 1);
+                        }
+                    }
+                }
+            });
+        },
+
+        saveAddress: function() {
+            var data = {};
+            data.Name = this.$.name.value;
+            data.address = this.$.address.value;
+            data.phone = this.$.phone.value;
+
+            if (this.setOpenHours) {
+                data.openHours = this.$.openHours.getOpenHours();
+            } else {
+                data.openHours = '';
+            }
+            data.mallId = this.malls[this.$.mallAddressId.selected].MallId;
+
+            this.ajaxGo({
+                url: 'api/addresses/merchant/' + this.selectedAddress.AddressId,
+                method: 'PUT',
+                body: JSON.stringify(data),
+                responseCallback: function(e) {
+                    var currentAddress = e.detail.response;
+                    this.selectedAddress = currentAddress;
+                    this.store.Addresses[this.selected] = this.selectedAddress;
+                    this.displayToastMsg("Address updated.");
+                }
+            }, false);
+        },
+
+        showAddAddressDialog: function() {
+            this.$.addAddressDialog.toggle();
+        },
+
+        addAddress: function() {
+            var validated = true;
+            if (!this.$.newAddressName.value) {
+                this.$.newAddressName.required = true;
+                validated = false;
+            }
+
+            if (!this.$.newAddressAddress.value) {
+                this.$.newAddressAddress.required = true;
+                validated = false;
+            }
+
+            if (!this.$.newAddressMallId.selected) {
+                this.newAddressMallIdError = "please select a mall";
+                validated = false;
+            }
+
+            if (!validated) {
+                this.validateForm();
+                return;
+            }
+
+            var data = {};
+            data.storeId = this.store.StoreId;
+            data.name = this.$.newAddressName.value;
+            data.address = this.$.newAddressAddress.value;
+            data.mallId = this.$.newAddressMallId.selected;
+            data.phone = this.$.newAddressPhone.value;
+
+            this.ajaxGo({
+                url: 'api/addresses/merchant',
+                method: 'POST',
+                body: JSON.stringify(data),
+                responseCallback: function(e) {
+                    var newAddress = e.detail.response;
+                    this.store.Addresses.push(newAddress);
+                    this.displayToastMsg("Address added");
+                    this.$.addAddressDialog.toggle();
+                }
+            }, false);
+        },
+
+        hideAddAddressDialog: function() {
+            this.$.addAddressDialog.toggle();
+        },
+
+        showDeleteAddressDialog: function() {
+            this.$.deleteAddressDialog.toggle();
+        },
+
+        deleteAddressConfirmed: function() {
+            this.ajaxGo({
+                url: 'api/addresses/' + this.selectedAddress.AddressId,
+                method: 'DELETE',
+                responseCallback: function(e) {
+                    for (var i = 0; i < this.store.Addresses.length; i++) {
+                        if (this.selectedAddress.AddressId === this.store.Addresses[i].AddressId) {
+                            this.store.Addresses.splice(i, 1);
+                        }
+                    }
+
+                    if (this.store.Addresses.length > 0) {
+                        this.selectedAddress = this.store.Addresses[0];
+                        this.showAddressDetails(this.selectedAddress);
+                    }
+                }
+            }, false);
+        }
+    });
+    </script>
+
+</polymer-element>

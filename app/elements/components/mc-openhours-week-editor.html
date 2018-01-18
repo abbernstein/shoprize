@@ -1,0 +1,66 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<link rel="import" href="../ui/mc-app-themes.html" />
+<link rel="import" href="../ui/mc-ui-base.html" />
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html" />
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="mc-openhours-day-editor.html" />
+
+<polymer-element name="mc-openhours-week-editor" extends="mc-ui-base">
+    <template>
+
+        <core-style ref="main-theme"></core-style>
+
+        <style>
+        </style>
+
+        <div layout vertical>
+            <mc-openhours-day-editor id="sundayHours" label="[[$$('promo.sunday')]]"></mc-openhours-day-editor>
+            <mc-openhours-day-editor id="mondayHours" label="[[$$('promo.monday')]]"></mc-openhours-day-editor>
+            <mc-openhours-day-editor id="tuesdayHours" label="[[$$('promo.tuesday')]]"></mc-openhours-day-editor>
+            <mc-openhours-day-editor id="wednesdayHours" label="[[$$('promo.wednesday')]]"></mc-openhours-day-editor>
+            <mc-openhours-day-editor id="thursdayHours" label="[[$$('promo.thursday')]]"></mc-openhours-day-editor>
+            <mc-openhours-day-editor id="fridayHours" label="[[$$('promo.friday')]]"></mc-openhours-day-editor>
+            <mc-openhours-day-editor id="saturdayHours" label="[[$$('promo.saturday')]]"></mc-openhours-day-editor>
+        </div>
+
+    </template>
+
+
+    <script>
+        Polymer({
+
+            publish: {
+                setOpenHours: function (value) {
+                    if (value) {
+                        var hours = value.split("|");
+                        if (hours.length == 7) {
+                            this.$.mondayHours.setHours(hours[0]);
+                            this.$.tuesdayHours.setHours(hours[1]);
+                            this.$.wednesdayHours.setHours(hours[2]);
+                            this.$.thursdayHours.setHours(hours[3]);
+                            this.$.fridayHours.setHours(hours[4]);
+                            this.$.saturdayHours.setHours(hours[5]);
+                            this.$.sundayHours.setHours(hours[6]);
+                        }
+                    }
+                },
+
+                getOpenHours: function () {
+                    var hours = [];
+                    hours.push(this.$.mondayHours.getHours());
+                    hours.push(this.$.tuesdayHours.getHours());
+                    hours.push(this.$.wednesdayHours.getHours());
+                    hours.push(this.$.thursdayHours.getHours());
+                    hours.push(this.$.fridayHours.getHours());
+                    hours.push(this.$.saturdayHours.getHours());
+                    hours.push(this.$.sundayHours.getHours());
+
+                    return hours.join("|");
+                }
+            }
+
+        });
+
+    </script>
+</polymer-element>

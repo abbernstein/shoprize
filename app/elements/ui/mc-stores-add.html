@@ -1,0 +1,112 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html" />
+<link rel="import" href="../../bower_components/core-dropdown-menu/core-dropdown-menu.html" />
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../bower_components/core-dropdown-menu/core-dropdown-menu.html" />
+<link rel="import" href="../../bower_components/core-item/core-item.html" />
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html"/>
+<link rel="import" href="../mc-component-file/mc-component-file.html"/>
+<link rel="import" href="mc-ui-base.html" />
+
+<polymer-element name="mc-stores-add" extends="mc-ui-base" attributes="onStoreAdded">
+
+    <template>
+
+        <core-header-panel fit mode="seamed">
+
+            <core-toolbar class="teal-bg medium-tall" mode="seamed" hero hero-id="hero.toolbar.store">
+                <paper-icon-button icon="arrow-forward" on-tap="{{showStores}}"></paper-icon-button>
+                <span flex>[[$$('store.stores')]]</span>
+            </core-toolbar>
+
+            <section class="content-section" cross-fade horizontal layout hero hero-id="hero.content.store">
+              
+                <div class="paper-section" layout vertical flex>
+                    <paper-shadow z="1"></paper-shadow>
+                    <paper-input label="[[$$('store.storeName')]]" id="storeName" floatinglabel></paper-input>
+
+                    <div class="form-group">
+                        <label class="control-label">[[$$('store.logo')]]</label>
+                        <mc-component-file id="logo"></mc-component-file>
+                    </div>
+
+                    <paper-input label="[[$$('store.website')]]" id="website" floatinglabel></paper-input>
+
+                    <div class="form-group">
+                        <label class="control-label">[[$$('store.mall')]]</label>
+                        <core-dropdown-menu required="true" id="mallAddressId" halign="right" valueattr="value" class="transparent">
+                            <template repeat="{{malls}}">
+                                <core-item label="{{Name}}" value="{{MallAddressId}}"></core-item>
+                            </template>
+                        </core-dropdown-menu>
+                    </div>
+
+                    <paper-input label="[[$$('store.address')]]" id="address" floatinglabel></paper-input>
+                    <paper-input label="[[$$('store.phone')]]" id="phone" floatinglabel></paper-input>
+                    
+                    <div layout horizontal end-justified>
+                        <paper-fab icon="check" on-tap="{{addStore}}"></paper-fab>
+                    </div>
+                </div>
+
+                <div layout vertical flex></div>
+
+            </section>
+        </core-header-panel>
+
+    </template>
+    <script>
+        Polymer({
+            malls: [],
+            publish: {
+                loadMalls: function () {
+                    console.log("load malls");
+                    this.ajaxGo({
+                        url: 'api/malls/nearby?radius=0',
+                        method: 'GET',
+                        responseCallback: function(e) {
+                            this.malls = e.detail.response;
+                        }
+                    });
+                }
+            },
+
+            addStore: function() {
+                if (!this.$.logo.imageUrls) {
+                    this.$.logo.error = "please select a logo for this store.";
+                }
+
+                var postData = {};
+                postData.StoreName = this.$.storeName.value;
+                postData.Logo = this.$.logo.imageUrls;
+                postData.Website = this.$.website.value;
+                postData.MallAddressId = this.$.mallAddressId.selected;
+                postData.Address = this.$.address.value;
+                postData.Phone = this.$.phone.value;
+
+                this.ajaxGo({
+                    url: 'api/stores/merchant',
+                    method: 'POST',
+                    body: JSON.stringify(postData),
+                    responseCallback: function(e) {
+                        this.fire('showStore');
+                    }
+                }, true);
+            },
+            initValue: function () {
+                console.log("init value");
+                this.loadMalls();
+            },
+
+            initValidaty: function() {
+                this.$.storeName.required = true;
+                this.$.address.required = true;
+            },
+
+            showStores: function() {
+                this.fire("showStore");
+            }
+        });
+    </script>
+</polymer-element>

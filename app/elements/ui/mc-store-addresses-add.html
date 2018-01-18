@@ -1,0 +1,64 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<polymer-element name="mc-store-addresses-add" attributes="store">
+
+    <template>
+
+        <paper-input id="name" label="Name" floatinglabel></paper-input>
+        <div class="form-group">
+            <label class="control-label">Mall</label>
+            <core-dropdown-menu halign="right" id="mall" class="transparent" valueattr="value">
+                <template repeat="{{malls}}">
+                    <core-item label="{{Name}}" value="{{MallId}}"></core-item>
+                </template>
+            </core-dropdown-menu>
+        </div>
+        
+        <paper-input id="address" label="Address" floatinglabel></paper-input>
+        <paper-input id="phone" label="Phone" floatinglabel></paper-input>
+        <paper-input id="openHours" label="Open Hours" floatinglabel></paper-input>
+        <div layout horizontal class="action-bar">
+            <paper-button raised class="primary" on-tap="{{saveAddress}}">Save</paper-button>
+            <span flex></span>
+            <paper-button raised>Delete</paper-button>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            malls: [],
+
+            publish: {
+                loadMalls: function() {
+                    this.ajaxGo({
+                        url: 'api/malls/nearby?radius=0',
+                        method: 'GET',
+                        responseCallback: function(e) {
+                            this.malls = e.details.response;
+                        }
+                    }, false);
+                }
+            },
+
+            saveAddress: function() {
+                var data = {};
+                data.name = this.$.name.value;
+                data.address = this.$.address.value;
+                data.phone = this.$.phone.value;
+                data.openHours = this.$.openHours.value;
+                data.mallId = this.$.mall.selected;
+                data.storeId = this.store.StoreId;
+
+                this.ajaxGo({
+                    url: 'api/address/merchant',
+                    method: 'PUT',
+                    body: JSON.stringify(data),
+                    responseCallback: function(e) {
+
+                    }
+                });
+            }
+        });
+    </script>
+
+</polymer-element>

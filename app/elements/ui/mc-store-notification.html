@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html" />
+
+<polymer-element name="mc-store-notification" extends="mc-ui-base" attributes="storeId">
+
+    <template>
+
+        <div layout horizontal cross-fade>
+            <div layout vertical flex id="infos" class="short">
+                <form layout vertical>
+
+                    <paper-input label="[[$$('store.notification')]]" id="notification" value="" floatinglabel></paper-input>
+                    <section layout horizontal end-justified>
+                        <paper-fab on-tap="{{pushNotification}}" icon="check"></paper-fab>
+                    </section>
+
+                </form>
+
+            </div>
+            <div flex></div>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer("mc-store-notification", {
+            initValue:function() {
+                
+            },
+            pushNotification: function () {
+                var validated = true;
+                if (!this.$.notification.value) {
+                    this.$.notification.required = true;
+                    validated = false;
+                }
+                if (!validated) {
+                    this.validateForm();
+                    return;
+                }
+                var data = {};
+                data.Message = this.$.notification.value;
+                data.StoreId = this.storeId;
+                this.ajaxGo({
+                    url: 'api/notifications',
+                    method: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    body: JSON.stringify(data),
+                    responseCallback: function (e) {
+                        this.displayToastMsg("Send Successfully");
+                    }
+                }, true);
+            }
+        });
+    </script>
+</polymer-element>

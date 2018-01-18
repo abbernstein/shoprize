@@ -1,0 +1,506 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/core-dropdown-menu/core-dropdown-menu.html">
+<link rel="import" href="../../bower_components/core-selector/core-selector.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../mc-component-file/mc-component-file.html"/>
+<link rel="import" href="../components/mc-stores-selector.html"/>
+<link rel="import" href="../components/mc-categories-selector.html" />
+<link rel="import" href="../components/mc-addresses-selector.html" />
+
+<link rel="import" href="mc-ui-base.html">
+<link rel="import" href="mc-promo-preview.html">
+
+<polymer-element name="mc-promo-edit" extends="mc-ui-base" vertical layout>
+
+    <template>
+        <style>
+            :host {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            #editor-container {
+                margin-left: 20px;
+            }
+
+            core-toolbar span{
+                text-transform: capitalize;
+            }
+
+            .availableAddressItem {
+                background-color: #999;
+                color: #DDD;
+                padding: 12px;
+                margin: 0 0 1px 1px;
+                float: right;
+                width: 30%;
+                cursor: pointer;
+            }
+
+            .availableAddressItem.core-selected {
+                background-color: #666;
+                color: #FFF;
+            }
+
+            .availableAddressItem.core-selected span {
+                font-weight: normal;
+            }
+
+            .expanded{
+                background-color: #EEE;
+                padding: 12px;
+            }
+
+
+        </style>
+
+        <core-header-panel fit mode="seamed">
+            <core-toolbar class="{{ {'red-bg':type=='surprise', 'purple-bg':type=='deal'} | tokenList}} medium-tall" hero hero-id="hero.toolbar.surprises">
+                <paper-icon-button icon="arrow-forward" on-tap="{{onGoBack}}"></paper-icon-button>
+                <span flex>{{title}}</span>
+            </core-toolbar>
+
+            <section class="content-section" layout horizontal flex hero hero-id="hero.content.surprises">
+
+                <div flex id="editor-container">
+                    <h2>[[$$('promo.details')]]</h2>
+
+                    <div class="paper-section" layout vertical flex>
+                        <paper-shadow z="1"></paper-shadow>
+
+                        <paper-input id="offer" label="[[$$('promo.offer')]]" value="{{offer}}" floatinglabel></paper-input>
+
+                        <paper-input id="description" label="[[$$('promo.description')]]" value="{{description}}" floatinglabel></paper-input>
+                        <paper-input id="code" hidden?="{{type=='deal'}}" label="[[$$('promo.code')]]" value="{{code}}" floatinglabel></paper-input>
+                        <mc-stores-selector id="storesSelector" selectedstore="{{selectedStore}}" on-core-select="{{onStoreSelected}}"></mc-stores-selector>
+                        <mc-addresses-selector id="addressesSelector" addresses="{{selectedStore.Addresses}}" selectedAddresses="{{selectedAddresses}}"></mc-addresses-selector>
+                        <mc-categories-selector id="categoriesSelector" selectedCategory="{{selectedCategory}}"></mc-categories-selector>
+
+                        <div class="form-group">
+                            <label class="control-label">[[$$('promo.picture')]]</label>
+                            <mc-component-file id="logo" imageUrls="{{pictureUrls}}" multiple="true" firstimageurl="{{previewImageUrl}}"></mc-component-file>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">[[$$('promo.promotionDate')]]</label>
+                            <div class="form-group">
+                                <label class="control-label">[[$$('promo.from')]]</label>
+                                <paper-input class="form-control" id="startDate" value="{{startDate}}" type="date"></paper-input>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">[[$$('promo.to')]]</label>
+                                <paper-input class="form-control" id="expireDate" value="{{expireDate}}" type="date"></paper-input>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <paper-checkbox label="[[$$('promo.everyDay')]]" checked="{{everyDay}}"></paper-checkbox>
+                            <div class="checkbox-horizontal-list expanded" hidden?="{{everyDay}}">
+                                <paper-checkbox id="mondayCheckbox" label="[[$$('promo.monday')]]"></paper-checkbox>
+                                <paper-checkbox id="tuesdayCheckbox" label="[[$$('promo.tuesday')]]"></paper-checkbox>
+                                <paper-checkbox id="wednesdayCheckbox" label="[[$$('promo.wednesday')]]"></paper-checkbox>
+                                <paper-checkbox id="thursdayCheckbox" label="[[$$('promo.thursday')]]"></paper-checkbox>
+                                <paper-checkbox id="fridayCheckbox" label="[[$$('promo.friday')]]"></paper-checkbox>
+                                <paper-checkbox id="saturdayCheckbox" label="[[$$('promo.saturday')]]"></paper-checkbox>
+                                <paper-checkbox id="sundayCheckbox" label="[[$$('promo.sunday')]]"></paper-checkbox>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">[[$$('promo.promotionTime')]]</label>
+                            <paper-checkbox id="allDayCheckbox" label="[[$$('promo.allDay')]]" checked="{{allDay}}"></paper-checkbox>
+                            <div hidden?="{{allDay}}" class="expanded">
+
+                                <div class="form-group">
+                                    <label class="control-label">[[$$('promo.from')]]</label>
+                                    <paper-input class="form-control" id="jitStart" value="{{jitStart}}" type="time"></paper-input>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">[[$$('promo.to')]]</label>
+                                    <paper-input class="form-control" id="jitEnd" value="{{jitEnd}}" type="time"></paper-input>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" hidden?="{{type=='deal'}}">
+                            <paper-input id="availableTime" label="[[$$('promo.availableHours')]]" type="number" value="{{availableHours}}" floatinglabel required?="{{type=='surprise'}}"></paper-input>                            
+                            <label class="control-label">[[$$('promo.availableHoursDesc')]]</label>
+                        </div>
+
+                        <div class="form-group" hidden?="{{type=='deal'}}">
+                            <paper-input id="redeemLimit" label="[[$$('promo.redeemLimit')]]" type="number" value="{{redeemLimit}}" floatinglabel required></paper-input>
+                            <label class="control-label">[[$$('promo.redeemLimitDesc')]]</label>
+                        </div>
+
+                        <paper-checkbox label="[[$$('promo.saveAsDraft')]]" checked="{{saveAsDraft}}"></paper-checkbox>
+
+                        <div layout horizontal>
+                            <div flex></div>
+                            <paper-fab class="primary" icon="check" on-tap="{{submitForm}}"></paper-fab>
+                        </div>
+                    </div>
+                </div>
+
+                <div layout vertical flex>
+                    <h2>[[$$('promo.preview')]]</h2>
+                    <mc-promo-preview offer="{{offer}}" imageurl="{{previewImageUrl}}" description="{{description}}" code="{{code}}"></mc-promo-preview>
+                </div>
+
+            </section>
+        </core-header-panel>
+    </template>
+
+    <script>
+        Polymer('mc-promo-edit', {
+            promoId: '',
+            descriptionClone: '',
+            categories: [],
+            categoryId: '',
+            storeId: '',
+            jitStart: 0,
+            jitEnd: 0,
+            allDay: true,
+            everyDay: true,
+            saveAsDraft: false,
+            type: '',
+            action: '',
+            code:'',
+            title: '',
+            previewImageUrl: '',
+            offer: '',
+            description: '',
+            pictureUrls: '',
+            startDate: '',
+            expireDate: '',
+            availableHours: 1,
+            publishToallAddresses: true,
+            selectedStore: {},
+            selectedCategory: {},
+            selectedAddresses: [],
+            redeemLimit:20,
+
+            onGoBack: function() {
+                if (this.type === 'deal') {
+                    this.fire("showDeals");
+                } else {
+                    this.fire("showSurprises");
+                }
+            },
+
+            publish: {
+                setUpViews: function(e) {
+
+                    this.clearView();
+
+                    this.action = e.action;
+                    this.type = e.type;
+
+                    if (this.type === 'deal' && this.action === 'add') {
+                        this.title = this.$$$('promo.createDeal');
+                    }
+
+                    if (this.type === 'deal' && this.action === 'edit') {
+                        this.title = 'Edit Deal';
+                    }
+
+                    if (this.type === 'surprise' && this.action === 'add') {
+                        this.title = this.$$$('promo.createSurprise');
+                    }
+
+                    if (this.type === 'surprise' && this.action === 'edit') {
+                        this.title = 'Edit Surprise';
+                    }
+
+                    if (this.action === 'edit' && e.promo) {
+                        this.promoId = e.promo.Id;
+                        this.offer = e.promo.Offer;
+                        this.description = e.promo.Description;
+                        this.code = e.promo.Code;
+                        this.categoryId = e.promo.CategoryId;
+                        this.$.categoriesSelector.loadCategories(this.categoryId);
+
+                        this.pictureUrls = e.promo.PictureUrls;
+                        this.startDate = this.formatDate(e.promo.StartDate);
+                        this.expireDate = this.formatDate(e.promo.ExpireDate);
+
+                        this.redeemLimit=e.promo.RedeemLimit;
+                        this.$.redeemLimit.value=e.promo.RedeemLimit;
+
+                        if (e.promo.JitDays) {
+                            this.everyDay = false;
+                            if (e.promo.JitDays.indexOf("1") > -1) {
+                                this.$.mondayCheckbox.checked = true;
+                            }
+
+                            if (e.promo.JitDays.indexOf("2") > -1) {
+                                this.$.tuesdayCheckbox.checked = true;
+                            }
+
+                            if (e.promo.JitDays.indexOf("3") > -1) {
+                                this.$.wednesdayCheckbox.checked = true;
+                            }
+
+                            if (e.promo.JitDays.indexOf("4") > -1) {
+                                this.$.thursdayCheckbox.checked = true;
+                            }
+
+                            if (e.promo.JitDays.indexOf("5") > -1) {
+                                this.$.fridayCheckbox.checked = true;
+                            }
+
+                            if (e.promo.JitDays.indexOf("6") > -1) {
+                                this.$.saturdayCheckbox.checked = true;
+                            }
+
+                            if (e.promo.JitDays.indexOf("7") > -1) {
+                                this.$.sundayCheckbox.checked = true;
+                            }
+                        }
+
+                        if (e.promo.JitStart && e.promo.JitEnd && e.promo.JitStart !== e.promo.JitEnd) {
+                            this.allDay = false;
+                            this.jitStart = this.convertMinuteToTime(e.promo.JitStart);
+                            this.jitEnd = this.convertMinuteToTime(e.promo.JitEnd);
+                        }
+
+                        if (e.promo.Prerequisites) {
+                            try {
+                                var prereq = JSON.parse(e.promo.Prerequisites);
+                                this.$.availableTime.value = parseInt(prereq.ExpireMinutes / 60);
+                            } catch (e) {
+                            }
+                        }
+
+                        this.saveAsDraft = e.promo.SaveAsDraft;
+
+                    } else {
+                        this.$.categoriesSelector.loadCategories();
+                    }
+
+                    this.$.storesSelector.loadStores();
+                }
+            },
+
+            formatDate: function(value) {
+                if (value) {
+                    return value.split('T')[0];
+                } else {
+                    return '';
+                }
+            },
+
+            onStoreSelected: function(e, detail) {
+                if (detail.isSelected) {
+                    console.log(this.selectedStore);
+                    this.selectedAddresses = [];
+                    if (this.selectedStore.Addresses.length > 0) {
+                        for (var i = 0; i < this.selectedStore.Addresses.length; i++) {
+                            this.selectedAddresses.push(this.selectedStore.Addresses[i].AddressId);
+                        }
+                    }
+                }
+            },
+
+            clearView: function() {
+                this.promoId = '';
+                this.categories = [];
+                this.categoryId = '';
+                this.jitStart = 0;
+                this.jitEnd = 0;
+                this.allDay = true;
+                this.everyDay = true;
+                this.saveAsDraft = false;
+                this.type = '';
+                this.action = '';
+                this.title = '';
+                this.code = '';
+                this.previewImageUrl = '';
+                this.offer = '';
+                this.description = '';
+                this.pictureUrls = '';
+                this.startDate = '';
+                this.expireDate = '';
+                this.availableHours = 1;
+                this.stores = [];
+                this.redeemLimit=20;
+
+                this.$.mondayCheckbox.checked = false;
+                this.$.tuesdayCheckbox.checked = false;
+                this.$.wednesdayCheckbox.checked = false;
+                this.$.thursdayCheckbox.checked = false;
+                this.$.fridayCheckbox.checked = false;
+                this.$.saturdayCheckbox.checked = false;
+                this.$.sundayCheckbox.checked = false;
+
+            },
+
+            initValidaty: function() {
+                this.super();
+
+                this.$.offer.required = true;
+                this.$.startDate.required = true;
+
+                if (this.type === 'surprise') {
+                    this.$.availableTime.required = true;
+                }
+            },
+
+            convertToHtml: function(orginal) {
+                if (orginal) {
+                    return orginal.replace(/\n/gm, '<br/>');
+                }
+                return "";
+            },
+
+            convertTimeToMinute: function(value) {
+                if (value) {
+                    var hour = value.split(':')[0];
+                    var minute = value.split(':')[1];
+                    return hour * 60 + minute * 1;
+                } else {
+                    return null;
+                }
+            },
+
+            convertMinuteToTime: function(value) {
+                if (value) {
+                    var hours = Math.floor(value / 60) + "";
+                    var minutes = value % 60 + "";
+
+                    if (hours.length == 1) {
+                        hours = '0' + hours;
+                    }
+
+                    if (minutes.length == 1) {
+                        minutes = '0' + minutes;
+                    }
+
+                    return hours + ':' + minutes;
+                }
+            },
+
+            convertFromHtml: function(orginal) {
+                if (orginal) {
+                    return orginal.replace(/\<br\/\>/gm, '\n');
+                }
+                return "";
+            },
+
+            submitForm: function() {
+
+                var validated = true;
+
+                if (typeof this.selectedCategory != 'string') {
+                    this.$.categoriesSelector.error = "please choose a category";
+                    validated = false;
+                }
+
+                if (!this.selectedStore.StoreId) {
+                    this.$.storesSelector.error = "please choose a store";
+                    validated = false;
+                } else if (this.selectedAddresses.length == 0) {
+                    this.$.addressesSelector.error = "please choose an address.";
+                    validated = false;
+                }
+
+                if (this.$.logo.imageUrls === "") {
+                    this.$.logo.error = "please chooose an image.";
+                }
+
+                if (!validated) {
+                    return;
+                }
+
+
+
+                var formData = {};
+                formData.CategoryId = this.selectedCategory;
+                formData.Offer = this.$.offer.value;
+                formData.Description = this.$.description.value;
+                formData.StartDate = this.$.startDate.value;
+                formData.ExpireDate = this.$.expireDate.value;
+                formData.PictureUrls = this.$.logo.imageUrls;
+                formData.SaveAsDraft = this.saveAsDraft;
+                formData.Type = this.type;
+                formData.StoreId = this.selectedStore.StoreId;
+                formData.AddressIds = this.selectedAddresses;
+                formData.RedeemLimit = this.redeemLimit;
+                formData.Code = this.code;
+
+                if (!this.everyDay) {
+                    var jitDays = [];
+                    if (this.$.mondayCheckbox.checked) {
+                        jitDays.push(1);
+                    }
+                    if (this.$.tuesdayCheckbox.checked) {
+                        jitDays.push(2);
+                    }
+                    if (this.$.wednesdayCheckbox.checked) {
+                        jitDays.push(3);
+                    }
+                    if (this.$.thursdayCheckbox.checked) {
+                        jitDays.push(4);
+                    }
+                    if (this.$.fridayCheckbox.checked) {
+                        jitDays.push(5);
+                    }
+                    if (this.$.saturdayCheckbox.checked) {
+                        jitDays.push(6);
+                    }
+                    if (this.$.sundayCheckbox.checked) {
+                        jitDays.push(7);
+                    }
+
+                    formData.JitDays = jitDays.join();
+                } else {
+                    formData.JitDays = null;
+                }
+
+                if (!this.allDay) {
+
+                    formData.jitStart = this.convertTimeToMinute(this.$.jitStart.value);
+                    formData.jitEnd = this.convertTimeToMinute(this.$.jitEnd.value);
+
+                } else {
+                    formData.jitStart = null;
+                    formData.jitEnd = null;
+                }
+
+                if (this.type === "surprise") {
+                    formData.Prerequisites = '{"Type":"InStore","StartTime":"' + this.$.jitStart.value + '","ExpireMinutes":' + this.$.availableTime.value * 60 + '}';
+                }
+
+                var url = '';
+
+                if (this.action === 'edit') {
+                    url = 'api/merchant/promo/' + this.promoId;
+                } else {
+                    url = 'api/merchant/promo/' + this.type;
+                }
+
+                this.ajaxGo({
+                    url: url,
+                    method: this.action === 'edit' ? 'PUT' : 'POST',
+                    body: JSON.stringify(formData),
+                    responseCallback: function(e) {
+                        this.onGoBack();
+                    }
+                }, true);
+            }
+        });
+
+    </script>
+</polymer-element>

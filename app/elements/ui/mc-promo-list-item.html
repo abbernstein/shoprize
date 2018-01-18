@@ -1,0 +1,161 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/core-collapse/core-collapse.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/core-icons/communication-icons.html"/>
+<link rel="import" href="mc-ui-base.html">
+
+<polymer-element name="mc-promo-list-item" extends="mc-ui-base" attributes="promo">
+    <template>
+
+        <style>
+           
+            #promo_list {
+                padding-bottom: 0;
+                border-color: #CCC;
+                border-style: solid;;
+                border-width: 0 0 1px 0;
+                padding: 24px 0;
+                cursor: pointer;
+            }
+
+            #wrapper label{
+                margin-bottom: 6px;
+            }
+
+            #offer {
+                font-size: 18px;
+            }
+
+            #more {
+                margin-top: 20px;
+            }
+
+            .withMargin {
+                margin: 0 10px 0 0;
+            }
+
+            .small {
+                font-size: 0.75em;
+                margin-left: 24px;
+            }
+
+            #image {
+                width: 100px;
+                height: 100px;
+                margin: 0 0 0 24px;
+                -ms-background-size: contain;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .addresses label {
+                margin-left: 12px;
+            }
+
+            .promo-details {
+                margin-bottom: 12px;
+            }
+
+        </style>
+
+        <section id="promo_list" layout horizontal on-tap="{{toggleDetails}}">
+
+            <div id="wrapper" flex layout vertical>
+
+                <div layout horizontal>
+                    <div id="image" style="background-image:url('{{promo.Pictures[0].Url}}')"></div>
+
+                    <div layout vertical flex>
+                        <label>{{promo.Store}}</label>
+                        <span id="offer" class="bold">{{promo.Offer}}</span>
+
+                        <div layout horizontal>
+                            <span class="small">[[$$('promo.from')]] {{parseDate(promo.StartDate)}}</span>
+                            <span class="small" hidden?="{{!promo.ExpireDate}}">[[$$('promo.to')]] {{parseDate(promo.ExpireDate)}}</span>
+                        </div>
+                        
+                        <core-collapse id="collapse">
+                            <section id="more" flex layout vertical>
+
+                                <div layout horizontal class="promo-details">
+
+                                    <div flex three layout vertical>
+                                        <span id="description">
+                                            {{promo.Description}}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div layout horizontal>
+                                    <div flex class="addresses">
+                                        <template repeat="{{address in promo.AddressNames}}">
+                                            <label><core-icon icon="communication:location-on"></core-icon> {{address}}</label>
+                                        </template>
+                                    </div>
+                                    <paper-icon-button title="edit" icon="create" on-tap="{{editItem}}"></paper-icon-button>
+                                    <paper-icon-button title="delete" icon="delete" on-tap="{{deleteItem}}"></paper-icon-button>
+                                </div>
+                            </section>
+                        </core-collapse>
+                    </div>
+
+                    <div layout horizontal center-justified>
+                        <span class="small" hidden?="{{promo.RedeemLimit<=0}}" title="redeemlimit" ><core-icon icon="shop"></core-icon> {{promo.RedeemLimit}}</span>
+                        <span class="small" title="collected" hidden?="{{promo.Type==='Surprise'}}"><core-icon icon="favorite"></core-icon> {{promo.SavedCount}}</span>                        
+                        <span class="small" title="collected" hidden?="{{promo.Type==='Deal'}}"><core-icon icon="shopping-cart"></core-icon> {{promo.CollectedCount}}</span>
+                        <span class="small" title="redeemed" hidden?="{{promo.Type==='Deal'}}"><core-icon icon="shopping-basket"></core-icon> {{promo.RedeemedCount}}</span>
+                    </div>
+
+                </div>
+
+                
+            </div>
+            <div layout center horizontal center-justified>
+                <paper-icon-button id="toggleButton" icon="expand-more" on-tap="{{toggleDetails}}"></paper-icon-button>
+            </div>
+
+            <paper-dialog id="deleteConfirmDialog" transition="paper-dialog-transition-center">
+                <p>[[$$('promo.deleteConfirm')]]</p>
+                <paper-button on-tap="{{deleteConfirmed}}" affirmative autofocus>[[$$('misc.confirm')]]</paper-button>
+                <paper-button dismissive>[[$$('misc.cancel')]]</paper-button>
+            </paper-dialog>
+
+        </section>
+    </template>
+
+    <script>
+        Polymer('mc-promo-list-item', {
+            selected: 0,
+            showDetails: false,
+            toggleDetails: function() {
+                this.$.collapse.toggle();
+                if (this.$.toggleButton.icon === 'expand-more')
+                    this.$.toggleButton.icon = 'expand-less';
+                else {
+                    this.$.toggleButton.icon = 'expand-more';
+                }
+            },
+
+            parseDate: function(dateString) {
+                var s = Date.parse(dateString);
+                var date = new Date(s);
+                return date.toLocaleDateString("he-IL");
+            },
+
+            deleteItem: function() {
+                this.$.deleteConfirmDialog.toggle();
+            },
+
+            editItem: function() {
+                this.fire("editPromo", this.promo);
+            },
+
+            deleteConfirmed: function() {
+                this.fire("deletePromo", this.promo);
+            }
+        });
+    </script>
+</polymer-element>

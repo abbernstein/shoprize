@@ -1,0 +1,74 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="mc-ui-base.html">
+<polymer-element name="mc-shoppers-table" extends='mc-ui-base'>
+	<template>
+        <div cross-fade>
+            <p hidden?="{{sourceData && sourceData.length>0}}">[[$$('misc.noRecord')]]</p>
+            <div class="paper-section" hidden?="{{!(sourceData && sourceData.length>0)}}" cross-fade>
+                <paper-shadow z="1"></paper-shadow>
+                <table class="list-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Gender</th>
+                            <th>Age</th>
+                            <th>Visits</th>
+                            <th>Redeems</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template repeat="{{item in sourceData}}">
+                            <tr>
+                                <td>{{item.FirstName + ' ' + item.LastName}}</td>
+                                <td>{{item.Gender}}</td>
+                                <td>{{item.Age}}</td>
+                                <td>{{item.Visits}}</td>
+                                <td>{{item.Redeems}}</td>
+                            </tr>
+                            <!-- <tr>
+                            <td>Mick Bandict</td>
+                            <td>Male</td>
+                            <td>32</td>
+                            <td>24</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>Mick Bandict</td>
+                            <td>Male</td>
+                            <td>32</td>
+                            <td>24</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>Mick Bandict</td>
+                            <td>Male</td>
+                            <td>32</td>
+                            <td>24</td>
+                            <td>5</td>
+                        </tr> -->
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</template>
+<script>
+    Polymer('mc-shoppers-table', {
+        sourceData: null,
+        loadData: function(type, addressId) {
+            this.super();
+
+            this.ajaxGo({
+                url: 'api/stats/' + addressId + '/' + type,
+                method: "GET",
+                responseCallback: function(e) {
+                    if (e.detail.response) {
+                        this.sourceData = e.detail.response;
+                    }
+                }
+            }, false);
+        }
+    });
+</script>
+</polymer-element>

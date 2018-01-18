@@ -1,0 +1,93 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../ui/mc-app-themes.html" />
+<link rel="import" href="mc-component-file-image.html" />
+<link rel="import" href="../ui/mc-ui-base.html" />
+
+<polymer-element name="mc-component-file" extends="mc-ui-base" attributes="label imageUrls error multiple firstImageUrl">
+    <template>
+        <core-style ref="main-theme"></core-style>
+        <link rel="stylesheet" href="mc-component-file.css" />
+        <section class="form-group" layout vertical>
+            <label class="control-label">{{label}}</label>
+            <div id="images" layout horizontal>
+                <template repeat="{{picture, index in pictureUrls}}">
+                    <mc-component-file-image picture="{{picture}}"></mc-component-file-image>
+                </template>
+            </div>
+            <div id="progress" hidden?="{{!inProgress}}"><span>Uploading...</span></div>
+            <div layout vertical hidden?="{{(!multiple&&pictureUrls.length>0)||inProgress}}">
+                <input type="file" id="file" />
+                <paper-button class="primary" raised on-tap="{{uploadPictures}}">upload</paper-button>
+            </div>
+            <label id="error">{{error}}</label>
+        </section>
+    </template>
+    <script>
+        Polymer({
+            inProgress: false,
+            pictureUrls: [],
+            uploadPictures: function(e, details, sender) {
+                for (var i = 0, f; f = this.$.file.files[i]; i++) {
+                    this.uploadFile(f);
+                }
+            },
+
+            imageUrlsChanged: function (oldValue, newValue) {
+                if (!newValue) {
+                    this.$.file.value = '';
+                    this.firstImageUrl = '';
+                    this.pictureUrls = [];
+                } else {
+                    this.pictureUrls = newValue.split(',');
+                    this.firstImageUrl = this.pictureUrls[0];
+                }
+            },
+
+            generateValues: function() {
+                this.imageUrls = this.pictureUrls.join(',');
+                if (this.imageUrls) {
+                    this.firstImageUrl = this.pictureUrls[0];
+                } else {
+                    this.firstImageUrl = '';
+                }
+            },
+
+            uploadFile: function(file) {
+                this.inProgress = true;
+                this.ajaxGo({
+                    url: 'api/pictures',
+                    headers: '{"X_FILENAME":"' + encodeURI(file.name) + '"}',
+                    body: file,
+                    method: 'POST',
+                    responseCallback: function (e) {
+                        this.pictureUrls.push(e.detail.response.NewName);
+                        this.generateValues();
+                        this.$.file.value = "";
+                        this.error = "";
+                        this.inProgress = false;
+                    },
+                    errorCallback: function (e) {
+                        this.error = e.detail.response;
+                        this.inProgress = false;
+                    }
+                });
+            },
+
+            eventDelegates: {
+                "mc.component.file.image.removePicture": "removePicture"
+            },
+
+            removePicture: function(e, detail, sender) {
+                if (this.pictureUrls.length > 0) {
+                    for (var i = 0; i < this.pictureUrls.length; i++) {
+                        if (this.pictureUrls[i] === detail) {
+                            this.pictureUrls.splice(i, 1);
+                        }
+                    }
+
+                    this.generateValues();
+                }
+            }
+        });
+    </script>
+</polymer-element>

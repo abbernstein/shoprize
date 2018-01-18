@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer-cookie/polymer-cookie.html">
+
+<polymer-element name="mc-cookie" extends="polymer-cookie" constructor="McCookie">
+	<script>
+		// for more information, please see <polymer-cookie>
+	    Polymer('mc-cookie', {
+	    	valueChanged: function() {
+	          //this.expire = FOREVER;
+	          //this.save();
+	        },
+	        // TODO(dfreedman): collapse these when 'multiple props -> single change function' exists in Polymer
+	        expiresChanged: function() {
+	          //this.save();
+	        },
+	        getCookie: function(name) {
+	            this.name = name;
+	            this.load();
+	            return this.value;
+	        },
+	        saveCookie: function(obj) {
+	            this.name = obj.name;
+	            this.value = obj.value;
+	            this.expires = obj.expires || this.expires;
+	            this.secure = obj.secure || this.secure;
+	            this.domain = obj.domain || this.domain;
+	            this.path = obj.path || this.path;
+	            this["max-age"] = obj["max-age"] || this["max-age"];
+	            this.save();
+	        },
+	        removeCookie: function(name) {
+	            this.name = name;
+	            this.deleteCookie();
+	            this.save();
+	        },
+	        clearCookie: function() {
+	            var pairs = document.cookie.split(/\s*;\s*/);
+	            var map = pairs.map(function(kv) {
+	                var eq = kv.indexOf('=');
+	                return {
+	                    name: unescape(kv.slice(0, eq)),
+	                    value: unescape(kv.slice(eq + 1))
+	                };
+	            });
+	            for (var i = 0, len = map.length; i < len; i++) {
+	                this.removeCookie(map[i].name);
+	            }
+	        }
+	    });
+	</script>
+</polymer-element>

@@ -1,0 +1,14 @@
+﻿:host {
+    margin-bottom: 1rem;
+    -moz-min-width: 20em;
+    -ms-min-width: 20em;
+    -o-min-width: 20em;
+    -webkit-min-width: 20em;
+    min-width: 20em;
+}
+
+#error {
+    color: #D34336;
+    padding: .5em 0;
+    font-size: .75em;
+}

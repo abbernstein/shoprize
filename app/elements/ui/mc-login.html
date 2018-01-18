@@ -1,0 +1,126 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html"/>
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="mc-ui-base.html">
+
+<polymer-element name="mc-login" extends="mc-ui-base">
+    <template>
+        <style>
+
+            :host {
+                width: 100%;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            .title {
+                padding-right: 60px;
+            }
+
+        </style>
+
+        <core-header-panel mode="seamed" fit>
+            <core-toolbar class="medium-tall purple-bg" cross-fade slide-down-offscreen>
+                <span class="title" flex>[[$$('login.login')]]</span>
+            </core-toolbar>
+
+            <section class="content-section" layout horizontal cross-fade>
+                <div class="paper-section" layout vertical flex>
+                    <paper-shadow z="1"></paper-shadow>
+                    <paper-input floatinglabel id="username" label="[[$$('login.username')]]"></paper-input>
+                    <paper-input floatinglabel id="password" type="password" label="[[$$('login.password')]]"></paper-input>            
+                    <paper-checkbox label="[[$$('login.rememberMe')]]" id="remember_checkbox"></paper-checkbox>
+                    
+                   
+                    
+                    <div layout horizontal center>
+                        <paper-button class="link_button" on-tap="{{goRegister}}">[[$$('login.register')]]</paper-button>   
+                        <span flex></span>
+                        <paper-fab layout horizontal end-justified icon="check" on-tap="{{handleLogin}}"></paper-fab>
+                    </div>
+                </div>
+                <div flex></div>
+            </section>
+        </core-header-panel>
+    </template>
+
+    <script>
+
+        Polymer('mc-login', {
+            goRegister: function() {
+                this.fire('showRegister');
+            },
+            ready: function() {
+                this.super();
+                var username = this.getCookie('username');
+                var accessToken = this.getCookie('access_token');
+                if (username && accessToken) {
+                    this.fire('showDashboard');
+                }
+            },
+            loadData: function(){
+                return;
+            },
+            initValidaty: function(){
+                this.super();
+
+                var username = this.$.username;
+                var password = this.$.password;
+                username.error = "Username is not valid.";
+                username.required = true;
+                username.pattern = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
+                password.error = "Password is not valid.";
+                password.required = true;
+                password.pattern = "^[\\w\\W]{6,20}";
+            },
+            initValue: function(){
+                this.super();
+                this.$.username.value ='';
+                this.$.password.value='';
+            },
+            doLogin: function(username, password, rememberme) {                
+                this.ajaxGo({
+                    url: 'token',
+                    contentType: 'application/x-www-form-urlencoded',
+                    params: '{"grant_type":"password","username":"' + username + '","password":"' + password + '"}',
+                    method: "POST",
+                    responseCallback: function(e) {
+                        if(e.detail.response && e.detail.response.access_token && e.detail.response.access_token !='undefined'){
+                            this.clearCookie();                            
+                            if (rememberme) {       
+                                this.saveCookie({ "name": 'username', "value": username, "expires": new Date().setFullYear(new Date().getFullYear() + 1) });
+                                this.saveCookie({ "name": 'access_token', "value": e.detail.response.access_token, "expires": new Date().setFullYear(new Date().getFullYear() + 1) })
+                            } 
+                            else{
+                                 this.saveCookie({ "name": 'username', "value": username, "expires": new Date().setMinutes(new Date().getMinutes() + 1) })
+                                 //this.saveCookie({ "name": 'access_token', "value": e.detail.response.access_token, "expires": e.detail.response[".expires"] })
+                                 this.saveCookie({ "name": 'access_token', "value": e.detail.response.access_token, "expires": new Date().setMinutes(new Date().getMinutes() + 1) })
+                            }   
+                            this.fire('showDashboard');
+                        }
+                    }
+                     ,
+                     errorCallback: function(e) {
+                         this.$.password.error = 'invalid password';
+                         this.$.password.invalid = true;
+                         this.$.password.focusAction();
+                     }
+                },true);
+            },
+            handleLogin: function() {
+                // this.fire('showDashboard');                
+                var username = this.$.username.value;
+                var password = this.$.password.value;
+                var rememberme = this.$.remember_checkbox.checked;
+                this.doLogin(username,password,rememberme);  
+            }
+        });
+    </script>
+</polymer-element>

@@ -1,0 +1,73 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../bower_components/core-selector/core-selector.html" />
+
+<link rel="import" href="../ui/mc-app-themes.html" />
+<link rel="import" href="../ui/mc-ui-base.html" />
+
+<polymer-element name="mc-addresses-selector" extends="mc-ui-base" attributes="addresses selectedAddresses error">
+    <template>
+        <core-style ref="main-theme"></core-style>
+        <style>
+            core-item {
+                background-color: #CCC;
+                padding: 12px;
+                margin: 1px;
+                width: 30%;
+                color: #FFF;
+                text-shadow: #333 1px 1px;
+                float: right;
+            }
+
+                core-item h3 {
+                    margin: 0;
+                }
+
+                core-item.core-selected {
+                    background-color: #666;
+                    color: #FFF;
+                }
+
+                    core-item.core-selected span {
+                        font-weight: normal;
+                    }
+
+            paper-checkbox #checkbox.checked {
+                border-color: #B2FF59;
+            }
+
+            paper-checkbox #checkbox {
+                border-color: #999;
+            }
+        </style>
+        <div class="form-group">
+            <div>
+                <core-selector multi id="selector" valueattr="addressId" selected="{{selectedAddresses}}" on-core-select="{{onSelectedAddressChanged}}">
+                    <template repeat="{{address in addresses}}">
+                        <core-item addressid="{{address.AddressId}}">
+                            <div flex>
+                                <h3>{{address.Name}}</h3>
+                                <div horizontal layout>
+                                    <span>{{address.MallName}}</span>
+                                    <span flex></span>
+                                    <paper-checkbox id="indicator"></paper-checkbox>
+                                </div>
+                            </div>
+                        </core-item>
+                    </template>
+                </core-selector>
+            </div>
+            <div>
+                <span class="field-error">{{error}}</span>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            onSelectedAddressChanged: function (e, detail) {
+                this.selectedAddresses = this.$.selector.selected;
+                detail.item.querySelector("#indicator").checked=detail.isSelected;
+                this.error = '';
+            }
+        });
+    </script>
+</polymer-element>

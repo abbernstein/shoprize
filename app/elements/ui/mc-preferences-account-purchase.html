@@ -1,0 +1,386 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html"/>
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html" />
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-from-bottom.html" />
+<link rel="import" href="mc-ui-base.html">
+<link rel="import" href="../components/mc-code-library.html"/>
+
+<polymer-element name="mc-preferences-account-purchase" extends="mc-ui-base" attributes="payment">    
+    <template>
+        <style>
+            #wrapper label {
+                margin-bottom: 5px;
+            }
+
+            #packageInfo {
+                padding: 10px 10px;
+            }
+
+            .small {
+                font-size: .75rem;
+                margin-bottom: 1em;
+                margin-top: 0;
+            }
+
+            #packages .paper-section {
+                margin-left: 24px;
+            }
+
+            #packages .core-selected {
+                background-color: #009688;
+                color: #fff
+            }
+
+            #packages .paper-section:last-child {
+                margin-right: 0;
+            }
+
+            #packages .paper-section h2 {
+                text-transform: capitalize;
+                font-size: 2em;
+                font-weight: normal;
+                margin: 0;
+            }
+
+            #packages .paper-section h2 paper-checkbox {
+                margin-top: 0;
+            }
+
+            paper-ripple {
+                color: #CCC;
+            }
+
+        </style>
+        <mc-code-library id="codeLibrary"></mc-code-library>
+        <div flex layout vertical>
+            
+            <core-animated-pages selected="{{currentPage}}" transitions="cross-fade slide-from-bottom">
+
+                <section id="packages" name="packages">
+                    
+                    <div cross-fade slide-from-bottom>
+                        <h2>[[$$('preferences.purchase.orderDetails')]]</h2>
+
+                        <core-selector selected="{{selectedPackageIndex}}" flex layout horizontal>
+                            <template repeat="{{package in packages}}">
+
+                                <div class="paper-section" flex one hidden?="{{package.Fee==0}}">
+                                    <paper-shadow z="1"></paper-shadow>
+
+                                    <div layout horizontal>
+                                        <h2 flex>{{package.Name}}</h2>
+                                        <span>${{package.Fee}}</span>
+                                    </div>
+                                    <p class="small">{{package.Description}}</p>
+                                    <paper-ripple class="recenteringTouch" fit></paper-ripple>
+                                </div>
+
+                            </template>
+                        </core-selector>
+
+                        <form class="short" id="package_form">
+                            <div class="form-group">
+                                <label class="control-label">[[$$('preferences.purchase.lengthOfPurchase')]]</label>
+                                <core-dropdown-menu class="transparent" id="count" selected="{{monthCount}}" halign="right" valueattr="name">
+                                    <core-item label="1 חודש" name="1"></core-item>
+                                    <core-item label="3 חודשים" name="3"></core-item>
+                                    <core-item label="6 חודשים" name="6"></core-item>
+                                    <core-item label="1 שנה" name="12"></core-item>
+                                    <core-item label="2 שנים" name="24"></core-item>
+                                    <core-item label="3 שנים" name="36"></core-item>
+                                    <core-item label="5 שנים" name="60"></core-item>
+                                </core-dropdown-menu>
+                            </div>
+
+                            <paper-input floatinglabel label="[[$$('preferences.purchase.startDate')]]" disabled value="{{startDate}}"></paper-input>
+                            <paper-input floatinglabel label="[[$$('preferences.purchase.expireDate')]]" disabled value="{{expireDate}}"></paper-input>
+                            <paper-input floatinglabel label="[[$$('preferences.purchase.total')]]" disabled value="${{ monthCount*selectedPackage.Fee | toFixed }}"></paper-input>
+
+                            <div layout horizontal end-justified>
+                                <paper-button class="primary" raised on-tap="{{nextPage}}">[[$$('preferences.purchase.checkout')]] &gt;</paper-button>
+                            </div>
+
+                        </form>
+                    </div>
+                </section>
+
+                <section id="contact_info" name="contact_info">
+                    <div cross-fade slide-from-bottom>
+                        <form id="contact_info_form" class="short">
+                            <h2>[[$$('preferences.purchase.billing')]]</h2>
+                            <content id="contact_info_content">
+                                <paper-input floatinglabel id="firstName" label="[[$$('preferences.purchase.firstName')]]"></paper-input>
+                                <paper-input floatinglabel id="lastName" label="[[$$('preferences.purchase.lastName')]]"></paper-input>
+                                <paper-input floatinglabel id="company" label="[[$$('preferences.purchase.company')]]"></paper-input>
+                                <paper-input floatinglabel id="address" label="[[$$('preferences.purchase.billingAddress')]]"></paper-input>
+                                <paper-input floatinglabel id="city" label="[[$$('preferences.purchase.city')]]"></paper-input>
+                                <paper-input floatinglabel id="state" label="[[$$('preferences.purchase.state')]]"></paper-input>
+                                <paper-input floatinglabel id="zipCode" label="[[$$('preferences.purchase.zipCode')]]"></paper-input>
+                                <paper-input floatinglabel id="phone" type="tel" label="[[$$('preferences.purchase.phone')]]"></paper-input>
+                                <paper-input floatinglabel id="email" type="email" label="[[$$('preferences.purchase.email')]]"></paper-input>
+                            </content>
+                            <div layout horizontal>
+                                <paper-button class="link_button" on-tap="{{ previousPage }}">&lt; [[$$('misc.back')]]</paper-button>
+                                <span flex></span>
+                                <paper-button class="primary" raised on-tap="{{gotoBillingInfo}}">[[$$('misc.continue')]] &gt;</paper-button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="billing_info" name="billing_info">
+                    <div cross-fade slide-up-offscreen>
+                        <form id="credit_card_form" class="short">
+                            <content id="billing_info_content" class="short">
+                                <h2>[[$$('preferences.purchase.creditCardInfo')]]</h2>
+                                <div class="form-group">
+                                    <label class="control-label">[[$$('preferences.purchase.creditCardType')]]</label>
+                                    <core-dropdown-menu halign="right" class="transparent" id="creditCardTypeDropdown" selected="Visa" valueattr="name">
+                                        <core-item label="Visa" name="Visa"></core-item>
+                                        <core-item label="MasterCard" name="MasterCard"></core-item>
+                                        <core-item label="Discover" name="Discover"></core-item>
+                                        <core-item label="Amex" name="Amex"></core-item>
+                                        <core-item label="Paypal" name="Paypal"></core-item>
+                                    </core-dropdown-menu>
+                                </div>
+                                <paper-input floatinglabel id="cardNo" type="number" label="[[$$('preferences.purchase.creditCardNo')]]"></paper-input>
+                                <paper-input floatinglabel id="expiryYear" type="number" label="[[$$('preferences.purchase.expiryYear')]]"></paper-input>
+                                <div class="form-group">
+                                    <label class="control-label">[[$$('preferences.purchase.expiryMonth')]]</label>
+                                    <core-dropdown-menu halign="right" class="transparent" id="expiryMonthDropdown" selected="01" valueattr="name">
+                                        <core-item label="01" name="01"></core-item>
+                                        <core-item label="02" name="02"></core-item>
+                                        <core-item label="03" name="03"></core-item>
+                                        <core-item label="04" name="04"></core-item>
+                                        <core-item label="05" name="05"></core-item>
+                                        <core-item label="06" name="06"></core-item>
+                                        <core-item label="07" name="07"></core-item>
+                                        <core-item label="08" name="08"></core-item>
+                                        <core-item label="09" name="09"></core-item>
+                                        <core-item label="10" name="10"></core-item>
+                                        <core-item label="11" name="11"></core-item>
+                                        <core-item label="12" name="12"></core-item>
+                                    </core-dropdown-menu>
+                                </div>
+                                <paper-input floatinglabel id="securityCode" type="number" label="[[$$('preferences.purchase.securityCode')]]"></paper-input>
+                            
+                                <div layout horizontal cross-fade>
+                                    <paper-button on-tap="{{previousPage}}" class="link_button">&lt; [[$$('misc.back')]]</paper-button>
+                                    <span flex></span>
+                                    <paper-button on-tap="{{handlePurchase}}" class="primary" raised>[[$$('misc.submit')]]</paper-button>
+                                </div>
+                            </content>
+                        </form>
+                    </div>
+                </section>
+
+            </core-animated-pages>
+        </div>
+    </template>
+    <script>
+        Polymer('mc-preferences-account-purchase', {
+            monthCount: 1,
+            currentPage: 0,
+            selectedPackageIndex: 0,
+            startDate: '',
+            expireDate: '',
+            price: 0,
+
+            monthCountChanged: function() {
+                this.calculateDate();
+            },
+
+            toFixed: function(value) {
+                return value.toFixed(2);
+            },
+
+            selectedPackageIndexChanged: function(oldValue, newValue) {
+                this.selectedPackage = this.packages[newValue];
+            },
+
+            initValue: function() {
+                this.selectedPackage = {};
+                this.packageName = '';
+                this.packages = [];
+                this.startDate = this.$.codeLibrary.formatDate(new Date());
+                this.calculateDate();
+            },
+
+            calculateDate: function() {
+                this.expireDate = this.$.codeLibrary.formatDate(this.$.codeLibrary.addDate(new Date(), this.monthCount, "m"));
+            },
+
+            calculatePrice: function() {
+            },
+
+            clearView: function() {
+                var firstName = this.$.firstName;
+                var lastName = this.$.lastName;
+                var company = this.$.company;
+                var address = this.$.address;
+                var city = this.$.city;
+                var state = this.$.state;
+                var zipCode = this.$.zipCode;
+                var phone = this.$.phone;
+                var email = this.$.email;
+                var cardNo = this.$.cardNo;
+                var expiryYear = this.$.expiryYear;
+                var securityCode = this.$.securityCode;
+                var count = this.$.count;
+                address.value = '';
+                cardNo.value = '';
+                expiryYear.value = '';
+                firstName.value = '';
+                lastName.value = '';
+                securityCode.value = '';
+                city.value = '';
+                company.value = '';
+                email.value = '';
+                count.value = 1;
+                phone.value = '';
+                state.value = '';
+                zipCode.value = '';
+            },
+
+            initValidaty: function() {
+                var firstName = this.$.firstName;
+                firstName.required = true;
+                firstName.maxlength = 255;
+                var lastName = this.$.lastName;
+                lastName.required = true;
+                lastName.maxlength = 255;
+                var company = this.$.company;
+                company.required = true;
+                company.maxlength = 255;
+                var address = this.$.address;
+                address.required = true;
+                address.maxlength = 255;
+                var city = this.$.city;
+                city.required = true;
+                city.maxlength = 50;
+                var state = this.$.state;
+                state.required = true;
+                state.maxlength = 50;
+                var zipCode = this.$.zipCode;
+                zipCode.required = true;
+                zipCode.maxlength = 50;
+                var phone = this.$.phone;
+                phone.required = true;
+                phone.maxlength = 50;
+                var email = this.$.email;
+                email.required = true;
+                var cardNo = this.$.cardNo;
+                cardNo.required = true;
+                cardNo.maxlength = 20;
+                cardNo.pattern = "^[\\d]{11,20}$";
+                cardNo.error = "Card No. is not valid.";
+                var expiryYear = this.$.expiryYear;
+                expiryYear.required = true;
+                expiryYear.min = 2014;
+                expiryYear.max = 9999;
+                var securityCode = this.$.securityCode;
+                securityCode.required = true;
+                securityCode.maxlength = 3;
+            },
+
+            loadData: function() {
+                this.packages = this.packages || [];
+                this.ajaxGo({
+                    url: 'api/packages/public',
+                    method: "GET",
+                    responseCallback: function(e) {
+                        if (e.detail.response) {
+                            this.packages = e.detail.response;
+                            this.selectedPackage = this.packages[this.selectedPackageIndex];
+                        }
+                    }
+                }, false);
+            },
+
+            changePackage: function(e, detail, sender) {
+                this.selectedPackage = sender.id;
+                this.packageName = sender.title;
+            },
+
+            handlePurchase: function() {
+
+                if (!this.validateSubform(this.$.billing_info_content)) {
+                    return;
+                }
+
+                var firstName = this.$.firstName;
+                var lastName = this.$.lastName;
+                var company = this.$.company;
+                var address = this.$.address;
+                var city = this.$.city;
+                var state = this.$.state;
+                var zipCode = this.$.zipCode;
+                var phone = this.$.phone;
+                var email = this.$.email;
+                var cardNo = this.$.cardNo;
+                var expiryYear = this.$.expiryYear;
+                var securityCode = this.$.securityCode;
+                var expiryMonthDropdown = this.$.expiryMonthDropdown;
+                var creditCardTypeDropdown = this.$.creditCardTypeDropdown;
+                var count = this.$.count;
+
+                var obj = {};
+                obj.Address1 = address.value;
+                obj.Address2 = '';
+                obj.CCardNumber = cardNo.value;
+                obj.CCardType = creditCardTypeDropdown.selected;
+                obj.CExpireMonth = expiryMonthDropdown.selected;
+                obj.CExpireYear = expiryYear.value;
+                obj.CFirstName = firstName.value;
+                obj.CLastName = lastName.value;
+                obj.CSecurityCode = securityCode.value;
+                obj.City = city.value;
+                obj.CompanyName = company.value;
+                obj.Email = email.value;
+                obj.FirstName = firstName.value;
+                obj.LastName = lastName.value;
+                obj.MobiPromoCount = 0;
+                obj.OrderMonthCount = this.monthCount;
+                obj.PackageId = this.selectedPackage.PackageId;
+                //obj.PaymentId=null;
+                obj.Phone = phone.value;
+                obj.State = state.value;
+                obj.ZipCode = zipCode.value;
+
+                this.ajaxGo({
+                    url: 'api/payments',
+                    method: "POST",
+                    body: JSON.stringify(obj),
+                    responseCallback: function(e) {
+                        // this.fire('showDashboard');  
+                        this.fire("showAccount");
+                        this.clearView();
+                        this.currentPage = 0;
+                        this.displayToastMsg("Thanks for your subscription. Order # " + e.detail.response.OrderNumber);
+                    }
+                }, true);
+            },
+
+            nextPage: function() {
+                this.currentPage++;
+            },
+
+            previousPage: function() {
+                this.currentPage--;
+            },
+
+            gotoBillingInfo: function() {
+                if (this.validateSubform(this.$.contact_info_content)) {
+                    this.currentPage++;
+                }
+            }
+        });
+    </script>
+</polymer-element>

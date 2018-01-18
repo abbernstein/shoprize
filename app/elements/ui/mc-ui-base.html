@@ -1,0 +1,196 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../data/mc-ajax.html">
+<link rel="import" href="../data/mc-cookie.html">
+<link rel="import" href="../../bower_components/i18next-element/i18next-element.html" />
+
+<polymer-element name="mc-ui-base">    
+    <template>
+        <mc-cookie id="cookieElement" hidden>
+        </mc-cookie>
+    </template>
+
+    <script>
+        Polymer("mc-ui-base", {
+            created:function() {
+                this.$$$ = document.createElement('i18next-element').$$;
+                this.errorCodes = {
+                    "1001": "mobiPromoNotFound",
+                    "1002": "surpriseNotFound",
+                    "1003": "categoryNotFound",
+                    "1004": "userNotFound",
+                    "1005": "mallNotFound",
+                    "1006": "applicationNotFound",
+                    "1007": "appTokenNotFound",
+                    "1008": "storeNotFound",
+                    "1009": "addressNotFound",
+                    "1010": "articleNotFound",
+                    "1011": "beaconNotFound",
+                    "1012": "creditCardNotFound",
+                    "1013": "packageNotFound",
+                    "1014": "paymentNotFound",                    
+                    '1015': "platformNotFound",
+
+                    "2001": "categoryExists",
+                    "2002": "mallExists",
+                    "2003": "userNameExists",
+                    "2004": "beaconExists",
+                    "2005": "deviceExists",
+                    "2006": "addressExists",
+                    "2007": "mailerExists",
+
+                    "3001": "redemptionLimitedReached",
+                    "3002": "mobiPromoRedeemed",
+                    "3003": "noActionProvided",
+                    "3004": "emptyImageFile",
+                    "3005": "invalidFileType",
+                    "3006": "duplicated",
+                    "3007": "accountHasBeenValidated",
+                    "3008": "modelIsNotValid",
+                    "3009": "unauthorized",
+                    "3010": "paymentNotAuthed",
+                    "3011": "paymentFailed",
+                    "3012": "mobiPromoExpired",
+                    "3013": "surpriseExpired",
+                    "3014": "surpriseGotAndUsed",
+                    "3015": "userNameOrPasswordNotCorrect",
+                    "3016": "userNotJoinLoyaltyProgram",
+                    "3017": "shopperNotQualifiedReward",
+
+                    "4000": "internalServerError",
+                    "4001": "badRequest"
+                };
+            },
+            ready: function(){
+                this.initValue();
+                this.initValidaty();
+            },
+            initValidaty: function(){
+
+            },
+            initValue: function(){
+
+            },
+            loadData: function (arg) {
+                if(!this.isAuthed())
+                {
+                    this.fire("showLogin");
+                }
+            },
+            isAuthed: function () {
+                var cookie = new McCookie(); // this.$.cookieElement;
+                var accessToken = cookie.getCookie("access_token");
+                if (accessToken && accessToken !='undefined') {
+                    return true;
+                }
+                return false;
+            },
+            validateForm: function() {
+                var isValid = true;
+
+                var target = this.$;
+
+                for (var prop in target) {
+                    if (this.$.hasOwnProperty(prop) && this.$[prop].checkValidity) {
+                        this.$[prop].checkValidity();
+                        if (isValid && this.$[prop].invalid) {
+                            isValid = false;
+                        }
+                    }
+                }
+                return isValid;
+            },
+
+            validateSubform:function(formContent) {
+                var isValid = true;
+                var elements = formContent.getDistributedNodes();
+                if (elements.length > 0) {
+                    for (var i = 0; i < elements.length; i++) {
+                        if (elements[i].checkValidity) {
+                           elements[i].checkValidity();
+                            if (isValid && elements[i].invalid) {
+                                isValid = false;
+                            }
+                        }
+                    }
+                }
+
+                return isValid;
+            },
+
+            ajaxGo: function(obj, checkForm, loadingObj) {                
+                if(!obj || !obj.url)
+                {
+                    return;
+                }
+                if (checkForm && !this.validateForm()) {
+                    return;
+                }
+                var callBack =function(e) {
+                    var statusCode = e.detail.response.slice(0,3);      
+                    var resObj = JSON.parse(e.detail.response.slice(5));
+                    var errorCode = resObj.ErrorCode;
+                    var errorMsg = resObj.Message;
+                    if(errorCode && this.errorCodes[errorCode]){
+                        errorMsg = this.$$$('error.'+this.errorCodes[errorCode]);
+                    }
+
+                    if(statusCode=="401")
+                    {
+                        var _self = this;
+                        this.displayToastMsg(errorMsg, function(){
+                            _self.job('fireshowLogin', function(){
+                                _self.fire('showLogin'); 
+                            },1000);
+                        });                        
+                        return;
+                    }                    
+                    this.displayToastMsg("errorCode: " + errorCode + ", message: " + errorMsg);
+                }
+                obj.accessToken = obj.accessToken || this.getCookie('access_token');
+                
+                //obj.responseCallback = obj.responseCallback || callBack;
+                obj.errorCallback = obj.errorCallback || callBack;
+                obj.errorCallback =obj.errorCallback.bind(this);
+                if(obj.responseCallback) {
+                    obj.responseCallback =obj.responseCallback.bind(this);
+                }                
+                
+                if(loadingObj){
+                    obj.completeCallback = obj.completeCallback || function(e){
+                        loadingObj.hide();
+                    }
+                }
+                if(obj.completeCallback){
+                    obj.completeCallback=obj.completeCallback.bind(this);
+                }
+                var ajax = new McAjax();
+                if(loadingObj){
+                    loadingObj.show();
+                }
+                ajax.ajaxRun(obj);
+            },
+            getCookie: function(name) {
+                var cookie = new McCookie(); // this.$.cookieElement;
+                return cookie.getCookie(name);
+            },
+            saveCookie: function(obj) {
+                var cookie = this.$.cookieElement;
+                cookie.saveCookie(obj);
+            },
+            removeCookie: function(name) {
+                var cookie = this.$.cookieElement;
+                cookie.removeCookie(name);
+            },
+            clearCookie: function(){
+                var cookie = this.$.cookieElement;
+                cookie.clearCookie();
+            },
+            displayToastMsg: function(msg, func){
+                this.fire('showMessage', {message: msg});
+                if(func && (typeof func == "function")){
+                    func();
+                }
+            }
+        });
+    </script>
+</polymer-element>

@@ -1,0 +1,70 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="mc-ui-base.html" />
+
+<polymer-element name="mc-stores-listitem" extends="mc-ui-base" attributes="store">
+    <template>
+        <style>
+            .list-item {
+                width: 300px;
+                float: right;
+                margin: 0 0 12px 12px;
+            }
+
+            .list-item h2 {
+                margin-top: 0;
+                margin-bottom: 1em;
+            }
+
+            .list-item .logo-wrapper {
+                text-align: center;
+                height: 200px;
+            }
+
+           .list-item img {
+                max-width: 100%;
+                max-height: 200px;
+            }
+        </style>
+        <div class="list-item paper-section" layout vertical>
+            <paper-shadow z="1"></paper-shadow>
+            <h2>{{store.Name}}</h2>
+            <div class="logo-wrapper">
+                <img src="{{store.Logo}}" />
+            </div>
+            <div layout horizontal>
+                <paper-icon-button on-tap="{{deleteStore}}" icon="delete"></paper-icon-button>
+                <paper-icon-button on-tap="{{showStoreDetails}}" icon="create"></paper-icon-button>
+            </div>
+        </div>
+        <paper-dialog id="deleteConfirmDialog" transition="paper-dialog-transition-center">
+             <p>[[$$('store.storeDeleteConfirm')]]</p>
+            <paper-button on-tap="{{deleteConfirmed}}" label="[[$$('misc.confirm')]]" affirmative autofocus></paper-button>
+            <paper-button label="[[$$('misc.cancel')]]" dismissive></paper-button>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            
+            deleteStore:function() {
+                this.$.deleteConfirmDialog.toggle();
+            },
+
+            deleteConfirmed: function () {
+
+                this.ajaxGo({
+                    url: 'api/stores/merchant/' + this.store.StoreId,
+                    method: 'DELETE',
+                    responseCallback: function (e) {
+                        this.fire('deleted', { store: this.store });
+                    }
+                }, false);
+            },
+
+            showStoreDetails:function() {
+                this.fire("showStoreDetails", { store: this.store });
+            }
+
+        });
+    </script>
+</polymer-element>

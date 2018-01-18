@@ -1,0 +1,92 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+
+<link rel="import" href="mc-ui-base.html" />
+<link rel="import" href="mc-store-basic.html" />
+<link rel="import" href="mc-store-addresses.html"/>
+<link rel="import" href="mc-store-notification.html"/>
+
+<polymer-element name="mc-stores-details" extends="mc-ui-base" attributes="store">
+
+    <template>
+        
+        <style>
+            
+            :host {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            paper-tabs paper-tab.core-selected {
+                 background-color: #33aba0;
+             }
+        </style>
+
+        <core-header-panel fit mode="seamed">
+
+            <core-toolbar class="teal-bg medium-tall" mode="seamed" hero hero-id="hero.toolbar.store">
+                <paper-icon-button icon="arrow-forward" on-tap="{{showStores}}"></paper-icon-button>
+                <span flex>{{store.Name}}</span>
+                <div class="bottom fit" horizontal layout>
+                    <paper-tabs selected="{{selected}}" id="paperTabs" on-core-select="{{onTabSelected}}" flex noink nobar>
+                        <paper-tab id="basic">[[$$('store.basicInfo')]]</paper-tab>
+                        <paper-tab id="addresses">[[$$('store.address')]]</paper-tab>
+                        <paper-tab id="notification">[[$$('store.notification')]]</paper-tab>
+                    </paper-tabs>
+                </div>
+            </core-toolbar>
+
+            <section class="content-section" cross-fade horizontal layout hero hero-id="hero.content.store">
+                <core-animated-pages flex id="pager" transitions="cross-fade">
+                    <mc-store-basic id="basic" name="basic"></mc-store-basic>
+                    <mc-store-addresses id="addresses" name="addresses"></mc-store-addresses>
+                    <mc-store-notification id="notification" name="notification"></mc-store-notification>
+                </core-animated-pages>
+            </section>
+        </core-header-panel>
+    </template>
+    <script>
+        Polymer({
+            selected: 0,
+            showStores: function() {
+                this.fire("showStore");
+            },
+            onTabSelected: function(e, detail, sender) {
+                if (detail.isSelected) {
+                    if (detail.item.id === 'basic') {
+                        this.showBasic();
+                    }
+                    if (detail.item.id === 'addresses') {
+                        this.showAddresses();
+                    }
+                    if (detail.item.id === 'notification') {
+                        this.showNotification();
+                    }
+                }
+            },
+            publish: {
+                showBasic: function () {
+                   this.selected = 0;
+                    this.$.pager.selected = 'basic';
+                    this.$.basic.store = this.store;
+                },
+
+                showAddresses: function () {
+                    this.selected = 1;
+                    this.$.pager.selected = 'addresses';
+                    this.$.addresses.store = this.store;
+                    this.$.addresses.loadMalls();
+                },
+
+                showNotification: function () {
+                    this.selected = 2;
+                    this.$.pager.selected = 'notification';
+                    this.$.notification.storeId = this.store.StoreId;
+                },
+            }
+        });
+    </script>
+</polymer-element>

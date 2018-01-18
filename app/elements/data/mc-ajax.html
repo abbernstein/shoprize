@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="mc-ajax" extends="core-ajax" constructor="McAjax">
+    <script>
+    // for more information, please see <core-ajax>
+    Polymer('mc-ajax', {
+        processResponse: function(xhr) {
+            var response = this.evalResponse(xhr);
+            this.response = response;
+            //this.fire('core-response', {response: response, xhr: xhr});
+            if (this.responseCallback) {
+                this.responseCallback({
+                    detail: {
+                        response: response,
+                        xhr: xhr
+                    }
+                });
+            }
+        },
+        processError: function(xhr) {
+            var response = xhr.status + ': ' + xhr.responseText;
+            //this.fire('core-error', {response: response, xhr: xhr});
+            if (this.errorCallback) {
+                this.errorCallback({
+                    detail: {
+                        response: response,
+                        xhr: xhr
+                    }
+                });
+            }
+        },
+        complete: function(xhr) {
+            // this.fire('core-complete', {response: xhr.status, xhr: xhr});
+            if (this.completeCallback) {
+                this.completeCallback({
+                    detail: {
+                        response: xhr.status,
+                        xhr: xhr
+                    }
+                });
+            }
+        },
+        ajaxReady: function(obj) {
+            // this.baseUrl = 'http://192.168.1.102/';
+            this.baseUrl = 'http://spapine.azurewebsites.net/';
+            this.url = obj.url.toUpperCase().indexOf(this.baseUrl.toUpperCase()) != -1 ? obj.url : (this.baseUrl + obj.url);
+            this.handleAs = obj.handleAs || 'json';
+            this.contentType = obj.contentType || 'application/json; charset=utf-8';
+            this.method = obj.method || 'GET';
+            this.body = obj.body || null;
+            this.params = obj.params || '';
+            var appToken = obj.appToken || 'f81b288ebb6d40459b7e09491ac22b1c';
+            var accessToken = obj.accessToken;
+
+            this.headers = obj.headers || '{}';
+            var headers = JSON.parse(this.headers);
+            headers["Access-Control-Allow-Origin"] = "*";
+            if (!headers.app_token) {
+                headers.app_token = appToken;
+            }
+
+            if (!headers.Authorization && accessToken) {
+                headers.Authorization = "Bearer " + accessToken;
+            }
+            this.headers = JSON.stringify(headers);
+
+            this.responseCallback = obj.responseCallback;
+            this.errorCallback = obj.errorCallback;
+            this.completeCallback = obj.completeCallback;
+        },
+        ajaxRun: function(obj) {
+            this.ajaxReady(obj);
+            this.go();
+        }
+    });
+    </script>
+</polymer-element>

@@ -1,0 +1,110 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html" />
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html" />
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html" />
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../bower_components/core-menu/core-menu.html"/>
+<link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html" />
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html"/>
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html"/>
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html"/>
+<link rel="import" href="../../bower_components/paper-button/paper-button.html" />
+
+<link rel="import" href="mc-ui-base.html" />
+<link rel="import" href="mc-stores-add.html"/>
+<link rel="import" href="mc-stores-listitem.html"/>
+
+<polymer-element name="mc-stores" extends="mc-ui-base">
+
+    <template>
+
+        <style>
+            core-menu  paper-item.core-selected {
+                background-color: #666;
+                color: #FFF;
+            }
+        </style>
+
+        <core-header-panel fit mode="seamed">
+
+            <core-toolbar class="teal-bg medium-tall" mode="seamed" hero hero-id="hero.toolbar.store">
+                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <span flex>[[$$('dashboard.storeSettings')]]</span>
+            </core-toolbar>
+
+            <section class="content-section" cross-fade horizontal layout hero hero-id="hero.content.store">
+                    <template repeat="{{store in stores}}">
+                        <mc-stores-listitem store="{{store}}" on-deleted="{{onStoreDeleted}}"></mc-stores-listitem>
+                    </template>
+            </section>
+
+        </core-header-panel>
+        <paper-fab class="main-action-button" on-tap="{{showAddStore}}" cross-fade slide-from-bottom icon="add"></paper-fab>
+
+        <paper-dialog id="deleteConfirmDialog" transition="paper-dialog-transition-center">
+            <p>[[$$('store.deleteStoreConfirm')]]</p>
+            <paper-button on-tap="{{deleteConfirmed}}" label="[[$$('misc.submit')]]" affirmative autofocus></paper-button>
+        </paper-dialog>
+    </template>
+
+    <script>
+
+        Polymer({
+            storeIdToDeleted:'',
+            stores: [],
+            loadData: function() {
+                this.super();
+                this.ajaxGo({
+                    url: 'api/stores/merchant',
+                    method: 'GET',
+                    responseCallback: function(e) {
+                        this.stores = e.detail.response;
+                    }
+                });
+            },
+
+            showDashboard: function() {
+                this.fire("showDashboard");
+            },
+
+            showAddStore:function() {
+                this.fire("showAddStore");
+            },
+
+            deleteStore: function (e, details, sender) {
+                this.storeIdToDeleted = sender.attributes["data-storeid"].value;
+                this.$.deleteConfirmDialog.toggle();
+            },
+
+            deleteConfirmed:function() {
+                this.ajaxGo({
+                    url: 'api/stores/merchant/' + this.storeIdToDeleted,
+                    method: 'DELETE',
+                    responseCallback: function(e) {
+                        for (var i = 0; i < this.stores.length; i++) {
+                            if (this.stores[i].StoreId === this.storeIdToDeleted) {
+                                this.stores.splice(i, 1);
+                            }
+                        }
+                    }
+                }, false);
+            },
+
+            showEditStore: function(e, response, sender) {
+                this.selected = "edit";
+            },
+
+            onStoreAdded:function(newStore) {
+                this.stores.add(newStore);
+            },
+
+            onStoreDeleted:function(e, detail, sender) {
+                var store = detail.store;
+                this.stores.splice(this.stores.indexOf(store), 1);
+            }
+
+        });
+
+    </script>
+
+</polymer-element>

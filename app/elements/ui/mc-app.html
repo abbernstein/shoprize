@@ -1,0 +1,256 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../../bower_components/core-animated-pages/transitions/list-cascade.html">
+<link rel="import" href="../../bower_components/core-dropdown-menu/core-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/i18next-element/i18next-element.html">
+<link rel="import" href="../i18n.html"/>
+<link rel="import" href="../data/mc-cookie.html">
+<link rel="import" href="mc-ui-base.html">
+<link rel="import" href="mc-login.html">
+<link rel="import" href="mc-register.html">
+<link rel="import" href="mc-dashboard.html">
+<link rel="import" href="mc-promo-edit.html">
+<link rel="import" href="mc-deals.html">
+<link rel="import" href="mc-surprises.html">
+<link rel="import" href="mc-store.html">
+<link rel="import" href="mc-stores-add.html"/>
+<link rel="import" href="mc-stores-details.html"/>
+<link rel="import" href="mc-stores.html"/>
+<link rel="import" href="mc-shoppers.html">
+<link rel="import" href="mc-preferences.html">
+
+<polymer-element name="mc-app">
+    <template>        
+        <style>
+            :host {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            #core_animated_pages {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                position: absolute;
+            }
+        </style>
+        <mc-cookie id="cookieElement" hidden>
+        </mc-cookie>
+        <core-animated-pages selected="{{selected}}" transitions="cross-fade hero-transition slide-up-offscreen slide-up list-cascade" notap id="core_animated_pages">
+            <mc-login id="login" name="login"></mc-login>
+            <mc-register id="register" name="register"></mc-register>
+            <mc-dashboard id="dashboard" name="dashboard"></mc-dashboard>
+            <mc-promo-edit id="promoedit" name="promoedit"></mc-promo-edit>
+            <mc-surprises id="surprises" name="surprises"></mc-surprises>
+            <mc-deals id="deals" name="deals"></mc-deals>
+            <mc-stores id="store" name="store"></mc-stores>
+            <mc-stores-details id="storeDetails" name="storeDetails"></mc-stores-details>
+            <mc-stores-add id="storeadd" name="storeadd"></mc-stores-add>
+            <mc-shoppers id="shoppers" name="shoppers"></mc-shoppers>
+            <mc-preferences id="preferences" name="preferences"></mc-preferences>
+        </core-animated-pages>
+        <paper-toast id="toastMsg" class="capsule"></paper-toast>
+    </template>
+
+    <script>
+        Polymer('mc-app', {
+            selected: 'dashboard',
+            selectedStore: {},
+            eventDelegates: {
+                'showRegister': 'showRegister',
+                'showLogin': 'showLogin',
+                'showDashboard': 'showDashboard',
+                'showPreferences': 'showPreferences',
+                'showPromoEdit': 'showPromoEdit',
+                'showPromoAdd': 'showPromoAdd',
+                'showDeals': 'showDeals',
+                'showSurprises': 'showSurprises',
+                'editSurprise': 'showPromoEdit',
+                'showStore': 'showStore',
+                'showAddStore': 'showAddStore',
+                'showStoreDetails': 'showStoreDetails',
+                'showLoyalMembers': 'showLoyalMembers',
+                'showShopperInStore': 'showShopperInStore',
+                'showWalkIns': 'showWalkIns',
+                'showInMall': 'showInMall',
+                'showShoppers': 'showShoppers',
+                'showMessage': 'showMessage',
+                'editPromo': 'editPromo'
+            },
+
+            created: function() {
+                i18n.init({ lng: 'he-IL' });
+            },
+
+            ready: function() {
+
+                var dummyState = { app: 'sp' };
+                if (!history.state) {
+                    history.pushState(dummyState, "");
+                }
+                window.onpopstate = function() {
+                    if (this.selected === 'register') {
+                        this.showLogin();
+                    } else if (this.selected !== 'login') {
+                        this.showDashboard();
+                        // this.$.dashboard.loadData();
+                    }
+
+                    history.pushState(dummyState, "");
+                }.bind(this);
+
+                this.checkAuth();
+
+
+            },
+
+            selectedChanged: function() {
+                if (this.selected) {
+                    if (this.$[this.selected].loadData) {
+                        this.$[this.selected].loadData();
+                    }
+                }
+            },
+            checkAuth: function() {                
+                var cookie = this.$.cookieElement;
+                var loginCode = this.getUrlParam("login");
+                var userName = this.getUrlParam("name");
+                if(loginCode && userName)
+                {
+                    cookie.clearCookie();                    
+                    cookie.saveCookie({ "name": 'username', "value": userName, "expires": new Date().setMinutes(new Date().getMinutes() + 1)});
+                    cookie.saveCookie({ "name": 'access_token', "value": loginCode, "expires": new Date().setMinutes(new Date().getMinutes() + 1)});
+                }              
+                
+                var accessToken = cookie.getCookie("access_token");
+                if (!accessToken) {
+                    this.selected = 'login';
+                    return;
+                }
+                
+                this.showDashboard();
+                this.$.dashboard.loadData();
+            },
+            showRegister: function() {
+                this.selected = 'register';
+            },
+
+            showLogin: function() {
+                this.$.login.clearCookie();
+                this.$.login.initValue();
+                //this.selected = 'login';
+                if (this.selected == 'register') {
+                    this.selected = 'login';
+                } else {
+                    window.location.href='/';
+                    //window.location.reload();
+                }
+            },
+
+            showDashboard: function() {
+                this.selected = 'dashboard';
+            },
+
+            showPreferences: function(e,detail) {
+                this.selected = 'preferences';
+                if (detail.section) {
+                    this.$.preferences.selected = detail.section;
+                    //this.$.preferences.selectedChanged();
+                }
+            },
+
+            showPromoEdit: function(e, detail, sender) {
+                this.$.promoedit.setUpViews(detail);
+                this.selected = 'promoedit';
+            },
+
+            showDeals: function() {
+                this.selected = 'deals';
+            },
+
+            showSurprises: function() {
+                this.selected = 'surprises';
+            },
+
+            showStore: function() {
+                this.selected = 'store';
+            },
+
+            showLoyalMembers: function() {
+                this.selected = 'loyal';
+            },
+
+            showShopperInStore: function() {
+                this.selected = "shopperInStore";
+            },
+
+            showWalkIns: function() {
+                this.selected = "walkIns";
+            },
+
+            showInMall: function() {
+                this.selected = "inMall";
+            },
+
+            showShoppers: function(e, detail, sender) {
+                this.selected = "shoppers";
+                this.$.shoppers.selected = detail.section;
+                this.$.shoppers.addressId = detail.addressId;
+                this.$.shoppers.mallName = detail.mallName;
+                this.$.shoppers.addressName = detail.addressName;
+                this.$.shoppers.loadShopperData();
+            },
+
+            editPromo: function(e, detail, sender) {
+                var args = {};
+                args.type = detail.Type.toLowerCase();
+                args.action = "edit";
+                args.promo = detail;
+                this.$.promoedit.setUpViews(args);
+                this.selected = 'promoedit';
+            },
+
+            showMessage: function(e) {
+                this.$.toastMsg.text = e.detail.message;
+                this.$.toastMsg.duration = 12000;
+                this.$.toastMsg.show();
+            },
+
+            showAddStore: function() {
+                this.selected = 'storeadd';
+            },
+
+            showStoreDetails: function(e, detail) {
+                this.selected = 'storeDetails';
+                this.$.storeDetails.store = detail.store;
+                this.$.storeDetails.showBasic();
+            },
+            
+            getUrlParam: function(name){
+                var urlParams = {};
+                (function () {
+                    var match,
+                        pl = /\+/g,
+                        search = /([^&=]+)=?([^&]*)/g,
+                        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                        query = window.location.search.substring(1);
+
+                    while (match = search.exec(query))
+                        urlParams[decode(match[1])] = decode(match[2]);
+                })();
+                return urlParams[name];
+            }
+
+        });
+    </script>
+</polymer-element>

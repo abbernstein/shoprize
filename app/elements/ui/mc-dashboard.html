@@ -1,0 +1,496 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/core-icons/social-icons.html">
+<link rel="import" href="../../bower_components/core-icons/notification-icons.html">
+<link rel="import" href="../../bower_components/core-icons/social-icons.html">
+<link rel="import" href="../../bower_components/core-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../../bower_components/core-list/core-list.html" />
+<link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html" />
+<link rel="import" href="../../bower_components/core-menu/core-menu.html" />
+<link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html" />
+<link rel="import" href="../../bower_components/core-item/core-item.html" />
+<polymer-element name="mc-dashboard" extends='mc-ui-base' layout vertical>
+
+    <template>
+        <style>
+            :host {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+
+            .logo {
+                margin-top: 8px;
+            }
+
+            .subtile .title {
+                margin-left: .5em;
+            }
+
+            #headingTitle span {
+                margin-right: 2em;
+                color: #e84e40;
+            }
+
+            .pic {
+                margin: 0 12px 12px 0;
+                -ms-border-radius: 8px;
+                border-radius: 8px;
+            }
+
+                .pic h2 {
+                    margin: 24px;
+                }
+
+            core-toolbar {
+                padding: 12px 0;
+                height: auto;
+            }
+
+            #bottom_action_bar {
+                margin-left: 12px;
+                height: 150px;
+            }
+
+            .dash-item-logo {
+                width: 72px;
+                height: 72px;
+            }
+
+            .dash-panel {
+                padding: 12px;
+            }
+
+            .dash-item {
+                cursor: pointer;
+            }
+
+            .dash-items {
+                background-color: #FFF;
+            }
+
+                .dash-items .row {
+                    margin-left: 12px;
+                }
+
+            .dash-item.not-available {
+                cursor: default;
+            }
+
+            .address-section {
+                padding: 12px 24px;
+                color: #DDD;
+                cursor: default;
+            }
+
+                .address-section paper-button {
+                    color: #FFF;
+                }
+
+                .address-section h2 {
+                    margin: 0 0 12px 0;
+                    color: #FFF;
+                }
+
+                .address-section p {
+                    margin: 0;
+                }
+
+            .address-section-item {
+                background-color: #FFF;
+                color: #666;
+                cursor: pointer;
+                padding: 12px;
+                margin: 6px;
+                border-radius: 4px;
+            }
+
+                .address-section-item:hover {
+                    color: #FFF;
+                    background-color: #9575CD;
+                }
+
+                .address-section-item .number {
+                    font-size: 2em;
+                    text-align: center;
+                }
+
+            .number {
+                font-weight: bold;
+                font-size: 3em;
+            }
+
+            .with-pointer {
+                cursor: pointer;
+            }
+
+            .red-ripple paper-ripple {
+                color: #e84e40;
+            }
+
+            .purple-ripple paper-ripple {
+                color: #ab47bc;
+            }
+
+            core-list {
+            }
+
+            core-dropdown-menu {
+                background-color: transparent;
+            }
+
+            core-dropdown-menu  div#label{
+                margin:12px;
+                font-size: 1.2em;
+            }
+
+            core-item {
+                color: #666;
+            }
+
+            .address-item {
+                color: #666;
+            }
+
+            core-dropdown {
+                position: absolute;
+                top: 38px;
+                left: 0;
+                z-index: 1000;
+            }
+
+            #addressSelector{
+                border-width:0;
+            }
+
+           #addressSelector paper-item{
+                color: #666;
+                text-align:right;
+                height: 68px;
+                padding: 0;
+            }
+
+            .paper-item-label{
+                padding:12px;
+            }
+
+            .paper-item-label h2{
+                margin:0 0 12px 0;
+                font-size:1em;
+
+            }
+
+            .paper-item-label p{
+                margin:0;
+            }
+
+            paper-item  #label{
+                display:none;
+            }
+
+        </style>
+
+        <core-toolbar id="mainheader" class="white-bg" cross-fade slide-down-offscreen>
+            <span><img src="../../images/logo.png" class="logo" /></span>
+            <div flex layout horizontal center end-justified id="headingTitle">
+            </div>
+            <span id='displayName'></span>
+            <a class="badge red-bg" on-tap="{{upgradeAccount}}">[[$$('dashboard.upgrade')]]</a>
+        </core-toolbar>
+
+        <div class="dash-items" flex cross-fade layout vertical>
+
+            <div layout horizontal flex class="row">
+
+                <div class="dash-item" flex two layout vertical>
+                    <div class="wrapper" flex layout vertical hero?="{{currentHero==='shoppers'}}" hero-id="hero.content.shoppers">
+                        <div class="pic deep-purple-bg" hero?="{{currentHero==='shoppers'}}" hero-id="hero.toolbar.shoppers" flex layout vertical>
+                            <paper-shadow z="1"></paper-shadow>
+                            <div layout horizontal>
+                                <core-dropdown-menu halign="right" hidden?="{{hideAddressSelector}}" halign="right" id="addressSelector" selected="{{selectedTab}}">
+                                    <template repeat="{{dashboardResult.AddressDataResults}}">
+                                        <paper-item label="{{AddressName}}">
+                                            <div class="paper-item-label">
+                                                <p>{{MallName}}</p>
+                                                <h2>{{AddressName}}</h2>
+                                            </div>
+                                        </paper-item>
+                                    </template>
+                                </core-dropdown-menu>
+                                <div flex></div>
+                            </div>
+
+                            <core-animated-pages selected="{{selectedTab}}" flex>
+                                <template repeat="{{dashboardResult.AddressDataResults}}">
+                                    <div layout vertical flex style="padding:6px;">
+                                        <div layout horizontal flex>
+                                            <div class="address-section-item" flex vertical center center-justified layout on-tap="{{showInMall}}" data-addressid="{{AddressId}}" data-mallname="{{MallName}}" data-addressname="{{AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+
+                                                <core-icon icon="maps:local-mall"></core-icon>
+                                                <span class="title">[[$$('dashboard.shoppersInMall')]]</span>
+                                                <div class="number">{{ShoppersInMall}}</div>
+
+                                            </div>
+                                            <div class="address-section-item" flex vertical center center-justified layout on-tap="{{showWalkIns}}" data-addressid="{{AddressId}}" data-mallname="{{MallName}}" data-addressname="{{AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+                                                <core-icon icon="maps:directions-walk"></core-icon>
+                                                <span class="title">[[$$('dashboard.dailyWalkIns')]]</span>
+
+                                                <div class="number">{{DailyWalkIns}}</div>
+                                            </div>
+                                        </div>
+                                        <div layout horizontal flex>
+                                            <div class="address-section-item" flex vertical center center-justified layout on-tap="{{showShopperInStore}}" data-addressid="{{AddressId}}" data-mallname="{{MallName}}" data-addressname="{{AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+                                                <core-icon icon="store"></core-icon>
+                                                <span class="title">[[$$('dashboard.shoppersInStore')]]</span>
+                                                <div class="number">{{ShoppersInStore}}</div>
+                                            </div>
+
+                                            <div class="address-section-item" flex vertical center center-justified layout on-tap="{{showLoyalMembers}}" data-addressid="{{AddressId}}" data-mallname="{{MallName}}" data-addressname="{{AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+                                                <core-icon icon="loyalty"></core-icon>
+                                                <span class="title">[[$$('dashboard.loyalMembers')]]</span>
+                                                <div class="number">{{LoyalMembers}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </core-animated-pages>
+
+                            <!--<core-list data="{{dashboardResult.AddressDataResults}}" flex>
+                                <template>
+                                    <div class="address-section">
+                                        <p>{{model.MallName}}</p>
+                                        <h2>{{model.AddressName}}</h2>
+                                        <div layout horizontal>
+                                            <div class="address-section-item" flex vertical layout on-tap="{{showInMall}}" data-addressid="{{model.AddressId}}" data-mallname="{{model.MallName}}" data-addressname="{{model.AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+
+                                                <div>
+                                                    <core-icon icon="maps:local-mall"></core-icon>
+                                                    <span class="title">[[$$('dashboard.shoppersInMall')]]</span>
+                                                </div>
+                                                <div class="number">{{model.ShoppersInMall}}</div>
+
+                                            </div>
+                                            <div class="address-section-item" flex vertical layout on-tap="{{showWalkIns}}" data-addressid="{{model.AddressId}}" data-mallname="{{model.MallName}}" data-addressname="{{model.AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+
+                                                <div>
+                                                    <core-icon icon="maps:directions-walk"></core-icon>
+                                                    <span class="title">[[$$('dashboard.dailyWalkIns')]]</span>
+                                                </div>
+                                                <div class="number">{{model.DailyWalkIns}}</div>
+                                            </div>
+                                            <div class="address-section-item" flex vertical layout on-tap="{{showShopperInStore}}" data-addressid="{{model.AddressId}}" data-mallname="{{model.MallName}}" data-addressname="{{model.AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+
+                                                <div>
+                                                    <core-icon icon="store"></core-icon>
+                                                    <span>[[$$('dashboard.shoppersInStore')]]</span>
+                                                </div>
+                                                <div class="number">{{model.ShoppersInStore}}</div>
+                                            </div>
+                                            <div class="address-section-item" flex vertical layout on-tap="{{showLoyalMembers}}" data-addressid="{{model.AddressId}}" data-mallname="{{model.MallName}}" data-addressname="{{model.AddressName}}">
+                                                <paper-shadow z="1"></paper-shadow>
+
+                                                <div>
+                                                    <core-icon icon="loyalty"></core-icon>
+                                                    <span class="title">[[$$('dashboard.loyalMembers')]]</span>
+                                                </div>
+                                                <div class="number">{{model.LoyalMembers}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+
+                            </core-list>-->
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-item" flex layout vertical on-tap="{{showDeals}}">
+                    <div class="wrapper" flex layout vertical hero?="{{currentHero==='deals'}}" hero-id="hero.content.deals">
+                        <div class="pic purple-bg" hero?="{{currentHero==='deals'}}" hero-id="hero.toolbar.deals" flex layout vertical center center-justified>
+                            <paper-shadow z="1"></paper-shadow>
+                            <img class="dash-item-logo" src="../../images/ic_deal.png" />
+                            <span class="title">[[$$('dashboard.deals')]]</span>
+                            <span class="number">{{dashboardResult.DealCount}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-item" flex layout vertical on-tap="{{showSurprises}}">
+                    <div class="wrapper" flex layout vertical hero?="{{currentHero==='surprises'}}" hero-id="hero.content.surprises">
+                        <div class="pic red-bg" hero?="{{currentHero==='surprises'}}" hero-id="hero.toolbar.surprises" flex layout vertical center center-justified>
+                            <paper-shadow z="1"></paper-shadow>
+                            <img class="dash-item-logo" src="../../images/ic_surprise.png" />
+                            <span class="title">[[$$('dashboard.surprises')]]</span>
+                            <span class="number">{{dashboardResult.SurpriseCount}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div layout horizontal flex class="row">
+
+                <div class="dash-item" flex layout vertical on-tap="{{handleLogout}}">
+                    <div class="wrapper" flex layout vertical>
+                        <div class="pic orange-bg" flex layout vertical center center-justified>
+                            <paper-shadow z="1"></paper-shadow>
+                            <core-icon class="dash-item-logo" icon="exit-to-app"></core-icon>
+                            <span class="title">[[$$('dashboard.logout')]]</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-item" flex layout vertical on-tap="{{showPreferences}}">
+                    <div class="wrapper" flex layout vertical hero?="{{currentHero==='preferences'}}" hero-id="hero.content.preferences">
+                        <div class="pic indigo-bg" hero?="{{currentHero==='preferences'}}" hero-id="hero.toolbar.preferences" flex layout vertical center center-justified>
+                            <paper-shadow z="1"></paper-shadow>
+                            <core-icon class="dash-item-logo" icon="social:person"></core-icon>
+                            <span class="title">[[$$('dashboard.preferences')]]</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-item" flex layout vertical on-tap="{{showStore}}">
+                    <div class="wrapper" flex layout vertical hero?="{{currentHero==='store'}}" hero-id="hero.content.store">
+                        <div class="pic teal-bg" hero?="{{currentHero==='store'}}" hero-id="hero.toolbar.store" flex layout vertical center center-justified>
+                            <paper-shadow z="1"></paper-shadow>
+                            <core-icon class="dash-item-logo" icon="store"></core-icon>
+                            <span class="title">[[$$('dashboard.storeSettings')]]</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-item not-available" flex layout vertical>
+                    <div class="wrapper" flex layout vertical>
+                        <div class="pic indigo-bg" flex layout vertical center center-justified>
+                            <paper-shadow z="1"></paper-shadow>
+                            <core-icon class="dash-item-logo" icon="notification:sms"></core-icon>
+                            <span class="title">[[$$('dashboard.compaigns')]]</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </template>
+
+    <script>
+        Polymer("mc-dashboard", {
+            currentHero: "",
+            addressId: "",
+
+            initValue: function () {
+                this.dashboardResult = {};
+            },
+
+            loadData: function () {
+                this.super();
+                this.$.displayName.innerText = this.getCookie('username');
+                this.loadDashboardData();
+            },
+
+            isLoading: false,
+            hideAddressSelector:true,
+            selectedTab:0,
+            loadDashboardData: function () {
+                var self = this;
+                self.isLoading = true;
+                this.ajaxGo({
+                    url: 'api/stats/dashboard/all',
+                    method: "GET",
+                    responseCallback: function (e) {
+                        if (e.detail.response) {
+                            self.dashboardResult = e.detail.response;
+                            if (self.dashboardResult.AddressDataResults.length > 0) {
+                                this.$.addressSelector.label = self.dashboardResult.AddressDataResults[self.selectedTab].AddressName;
+                                self.hideAddressSelector = false;
+                            }
+
+                        }
+
+                        self.isLoading = false;
+                    }
+                }, false);
+                this.job('refreshOnlineData', this.loadDashboardData, 15000);
+            },
+
+            handleLogout: function () {
+                this.currentHero = "";
+                this.fire("showLogin");
+            },
+
+            showPreferences: function () {
+                this.currentHero = "preferences";
+                this.fire("showPreferences");
+            },
+
+            showSurprises: function () {
+                this.currentHero = "surprises";
+                this.fire("showSurprises");
+            },
+
+            showDeals: function () {
+                this.currentHero = "deals";
+                this.fire("showDeals");
+            },
+
+            showStore: function () {
+                this.currentHero = "store";
+                this.fire("showStore");
+            },
+
+            showShopperInStore: function (e, detail, sender) {
+                this.currentHero = "shoppers";
+                this.addressId = sender.attributes["data-addressid"].value;
+
+                this.fire('showShoppers', { section: 'instore', addressId: this.addressId, mallName: sender.attributes["data-mallname"].value, addressName: sender.attributes["data-addressname"].value });
+            },
+
+            showWalkIns: function (e, detail, sender) {
+                this.currentHero = "shoppers";
+                this.addressId = sender.attributes["data-addressid"].value;
+                this.fire("showShoppers", { section: 'walkins', addressId: this.addressId, mallName: sender.attributes["data-mallname"].value, addressName: sender.attributes["data-addressname"].value });
+            },
+
+            showInMall: function (e, detail, sender) {
+                this.currentHero = "shoppers";
+                this.addressId = sender.attributes["data-addressid"].value;
+                this.fire("showShoppers", { section: 'inmall', addressId: this.addressId, mallName: sender.attributes["data-mallname"].value, addressName: sender.attributes["data-addressname"].value });
+            },
+
+            showLoyalMembers: function (e, detail, sender) {
+                this.currentHero = "shoppers";
+                this.addressId = sender.attributes["data-addressid"].value;
+                this.fire("showShoppers", { section: 'loyalmembers', addressId: this.addressId, mallName: sender.attributes["data-mallname"].value, addressName: sender.attributes["data-addressname"].value });
+            },
+
+            showShoppers: function (e) {
+                console.log(e);
+                this.currentHero = "shoppers";
+                this.fire("showShoppers");
+            },
+
+            upgradeAccount: function (e) {
+                this.currentHero = "preferences";
+                this.fire("showPreferences", { section: 'purchase' });
+            }
+        });
+    </script>
+</polymer-element>

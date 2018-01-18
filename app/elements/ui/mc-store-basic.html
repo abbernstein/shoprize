@@ -1,0 +1,60 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../bower_components/paper-input/paper-input.html" />
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html" />
+
+<link rel="import" href="../mc-component-file/mc-component-file.html" />
+
+<polymer-element name="mc-store-basic" extends="mc-ui-base" attributes="store">
+
+    <template>
+
+        <div layout horizontal cross-fade>
+            <div layout vertical flex id="infos" class="short">
+                <form layout vertical>
+
+                    <paper-input label="[[$$('store.storeName')]]" required id="storeName" value="{{store.Name}}" floatinglabel></paper-input>
+                    <paper-input label="[[$$('store.website')]]" id="website" value="{{store.Website}}" floatinglabel></paper-input>
+                    <mc-component-file type="file" id="logo" label="[[$$('store.logo')]]" imageurls="{{store.Logo}}"></mc-component-file>
+                    
+                    <section layout horizontal end-justified>
+                        <paper-fab on-tap="{{saveStore}}" icon="check"></paper-fab>
+                    </section>
+
+                </form>
+
+            </div>
+            <div flex></div>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer("mc-store-basic", {
+            initValue:function() {
+                console.log(this.store);
+            },
+            saveStore: function () {
+
+                if (!this.store.Logo) {
+                    this.$.logo.error = "Please set a logo for the store.";
+                    return;
+                }
+
+                var data = {};
+                data.StoreName = this.store.Name;
+                data.Website = this.store.Website;
+                data.Logo = this.store.Logo;
+
+                this.ajaxGo({
+                    url: 'api/stores/merchant/'+this.store.StoreId,
+                    method: 'PUT',
+                    contentType: 'application/json; charset=utf-8',
+                    body: JSON.stringify(data),
+                    responseCallback: function (e) {
+                        this.displayToastMsg("Updated");
+                    }
+                }, true);
+            }
+        });
+    </script>
+</polymer-element>

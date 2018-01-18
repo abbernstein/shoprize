@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="mc-ui-base.html">
+<link rel="import" href="mc-preferences-account-payment.html">
+
+<polymer-element name="mc-preferences-account" extends="mc-ui-base">    
+    <template>
+        <p cross-fade hidden?="{{sourceData && sourceData.length>0}}">You don't have any subscription currently, please  <span class="bold"><paper-button class="badge red-bg" on-tap="{{doPurchase}}">Upgrade</paper-button></span> you account.</p>
+        <section  hidden?="{{!(sourceData && sourceData.length>0)}}"  cross-fade>            
+            <template repeat="{{item in sourceData}}">
+                <mc-preferences-account-payment payment="{{item}}"></mc-preferences-account-payment>    
+            </template>
+        </section>
+    </template>
+    <script>
+        Polymer('mc-preferences-account', {
+            sourceData: null,
+            eventDelegates: {
+                'refreshUI': 'refreshUI'
+            },
+            refreshUI: function(e) {
+                var paymentId = e.detail.paymentId;
+                var isChecked = e.detail.isChecked;
+                for (var i = 0, len = this.sourceData.length; i < len; i++) {
+                    if (this.sourceData[i].PaymentId == e.detail.paymentId) {
+                        this.sourceData[i].AutoRenewaled = isChecked;
+                        continue;
+                    }
+                    this.sourceData[i].AutoRenewaled = 0;
+                }
+                this.ajaxGo({
+                    url: 'api/payments/' + paymentId + '/' + isChecked + '/autorenewaled',
+                    method: 'POST',
+                    responseCallback: function() {
+
+                    }
+                }, false);
+            },
+            loadData: function() {
+                this.super();
+                this.ajaxGo({
+                    url: 'api/payments/merchant',
+                    method: 'GET',
+                    responseCallback: function(e) {
+                        if (e.detail.response) {
+                            this.sourceData = e.detail.response;
+                        }
+                    }
+                }, false);
+            },
+            doPurchase: function() {
+                this.fire('showPurchase');
+            }
+        });
+    </script>
+</polymer-element>

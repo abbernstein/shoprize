@@ -1,0 +1,87 @@
+<link rel="import" href="mc-store-beacons-item.html">
+<link rel="import" href="../../bower_components/core-dropdown-menu/core-dropdown-menu.html" />
+
+<polymer-element name="mc-store-beacons" extends="mc-ui-base" attributes="store">
+	<template>
+		<style>
+			mc-store-beacons-item {
+				float: right;
+			}
+
+			core-dropdown-menu {
+				width: 20em;
+			}
+
+			#closeButton {
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+		</style>
+
+		<section cross-fade layout vertical>
+			<core-animated-pages selected='{{selected}}' transitions="cross-fade hero-transition">
+				<section id="list" name="list">
+					<div>
+						<paper-icon-button icon="add" on-tap="{{showAddForm}}" hero hero-id="beacon.add"></paper-icon-button>
+					</div>
+					<div>
+						<template repeat="{{beacon in store.Beacons}}">
+							<mc-store-beacons-item beacon="{{beacon}}"></mc-store-beacons-item>
+						</template>
+					</div>
+				</section>
+
+                <section id="add" name="add">
+                    <div class="paper-section short" layout vertical hero hero-id="beacon.add">
+                        <paper-shadow z="1"></paper-shadow>
+                        <paper-icon-button id="closeButton" icon="close" on-tap="{{closeAddForm}}"></paper-icon-button>
+
+                        <label class="bold">[[$$('store.createBeacon')]]</label>
+
+                        <core-dropdown-menu halign="right" id="beaconType" valueattr="label">
+                            <core-item label="iBeacon"></core-item>
+                            <core-item label="WiFi"></core-item>
+                        </core-dropdown-menu>
+
+                        <paper-input floatinglabel id="beaconId" label="[[$$('store.beaconIdHint')]]"></paper-input>
+                        <div layout horizontal end-justified>
+                            <paper-fab icon="check" on-tap="{{addBeacon}}"></paper-fab>
+                        </div>
+                    </div>
+                </section>
+			</core-animated-pages>
+		</section>
+
+	</template>
+
+	<script>
+		Polymer({
+			selected: 'list',
+
+			showAddForm: function () {
+				//this.store.Beacons.add('{"Type":"WiFi","AssignedId":"asdfasdfadfasdf"}');
+				this.selected = 'add';
+			},
+			closeAddForm: function () {
+				this.selected = "list";
+			},
+
+			initValidaty: function () {
+				this.super();
+				var beaconId = this.$.beaconId;
+				beaconId.required = true;
+			},
+
+			addBeacon: function () {
+				var postForm = {};
+				postForm.Type = this.$.beaconType.selected;
+				postForm.AssignedId = this.$.beaconId.value;
+				if (this.validateForm()) {
+					this.fire('addBeacon', postForm);
+				}
+			}
+
+		});
+	</script>
+</polymer-element>

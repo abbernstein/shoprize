@@ -1,0 +1,17 @@
+{
+  "name": "merchantportal",
+  "version": "0.1.2",
+  "dependencies": {
+    "core-elements": "Polymer/core-elements#0.4.2",
+    "paper-elements": "Polymer/paper-elements#0.4.2",
+    "polymer": "Polymer/polymer#0.4.2",
+    "i18next-element": "Polymer/i18next-element",
+    "i18next": "~1.7.4",
+    "polymer-cookie": "PolymerLabs/polymer-cookie#~0.3.0"
+  },
+  "resolutions": {
+    "polymer": "0.4.2",
+    "platform": "^0.4.0",
+    "core-component-page": "^0.4.0"
+  }
+}

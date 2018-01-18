@@ -1,0 +1,115 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../../bower_components/core-icons/hardware-icons.html"/>
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html"/>
+
+<polymer-element name="mc-preferences-account-payment" extends="mc-ui-base" attributes="payment">    
+    <template>
+        <style>
+            #payment_list {
+                padding-bottom: 0;
+                border-color: #CCC;
+                border-style: solid;
+                border-width: 0 0 1px 0;
+                padding: 24px 0;
+            }
+            #wrapper label {
+                margin-bottom: 5px;
+            }  
+            #description label {
+                font-size: 0.8em;
+            }
+            #additional {
+                margin-top: 3px;
+                border-top: solid 1px gray;
+            }
+                #additional label {
+                    margin-right: 5px;
+                }
+
+            h2 {
+                font-weight: normal;
+                text-transform: capitalize;
+                margin: 0;
+            }
+
+            .small {
+                font-size: .75rem;
+                margin-bottom: 1em;
+                margin-top: 0;
+            }
+
+        </style>
+        <section id="payment_list" cross-fade layout vertical>
+
+            <div layout horizontal center>
+                <h2 flex>{{payment.PackageName}}</h2>
+                <span>${{payment.Fee}}</span>
+            </div>
+
+            <div>
+                <p>
+                    {{payment.Description}}
+                </p>
+            </div>
+
+            <div id="wrapper" layout vertical>
+                <section id="summary" layout horizontal center-justified>
+                    <div flex one layout vertical>
+                        <label class="small">[[$$('preferences.account.orderNumber')]]</label>
+                        <span class="bold">{{payment.OrderNumber}}</span>
+                    </div>
+                    <div flex one layout vertical>
+                        <label class="small">[[$$('preferences.account.purchasedAt')]]</label>
+                        <span class="bold">{{parseDateTime(payment.CreateDate)}}</span>
+                    </div>
+                    <div flex one layout vertical>
+                        <label class="small">[[$$('preferences.account.start')]]</label>
+                        <span class="bold">{{parseDate(payment.StartTime)}}</span>
+                    </div>
+                    <div flex one layout vertical>
+                        <label class="small">[[$$('preferences.account.expire')]]</label>
+                        <span class="bold">{{parseDate(payment.EndTime)}}</span>
+                    </div>
+
+                </section>
+
+                <div layout horizontal>
+                    <div layout horizontal flex end-justified>
+                        <span id="paymentId" hidden>{{payment.PaymentId}}</span>
+                        <span class="bold"><paper-checkbox checked="{{payment.AutoRenewaled}}" on-tap="{{autoRenewaledChanged}}" label="[[$$('preferences.account.autoRenewal')]]" id="auto_renewaled"></paper-checkbox></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    <script>
+        Polymer('mc-preferences-account-payment', {
+            autoRenewaledChanged: function(e, detail, sender) {
+                var isChecked = sender.checked;
+                var paymentId = this.$.paymentId.textContent;
+                this.fire('refreshUI', { paymentId: paymentId, isChecked: isChecked });
+            },
+            parseDate: function(dateString) {
+                if (!dateString) return;
+                var s = Date.parse(dateString);
+                var date = new Date(s);
+                return date.toLocaleDateString("he-IL");
+            },
+            parseDateTime: function(dateString) {
+                if (!dateString) return;
+                var s = Date.parse(dateString);
+                var date = new Date(s);
+                return date.toLocaleString("he-IL");
+            },
+            doPurchase: function() {
+                this.fire('showPurchase');
+            },
+        });
+    </script>
+</polymer-element>
