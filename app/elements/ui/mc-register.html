@@ -16,7 +16,8 @@
     <template>
         <style>
             :host {
-                position: absolute;
+                /*position: absolute;*/
+              overflow: auto;
                 width: 100%;
                 height: 100%;
                 -moz-box-sizing: border-box;
@@ -25,12 +26,14 @@
             }
 
         </style>
-        <core-header-panel mode="seamed" fit>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+      <core-header-panel mode="seamed" fit>
             <core-toolbar class="medium-tall purple-bg" cross-fade slide-down-offscreen>
                 <paper-icon-button icon="arrow-forward" on-tap="{{goLogin}}"></paper-icon-button>
-                <div class="title" flex>[[$$('register.register')]]</div>                
+                <div class="title" flex>[[$$('register.register')]]</div>
             </core-toolbar>
-                
+
             <section class="content-section" cross-fade slide-up-offscreen layout horizontal>
                 <div class="paper-section" layout vertical flex>
                     <paper-shadow z="1"></paper-shadow>
@@ -48,7 +51,7 @@
                     <div layout horizontal end-justified>
                         <paper-fab on-tap="{{handleRegister}}" icon="check"></paper-fab>
                     </div>
-                   
+
                 </div>
                 <div flex></div>
             </section>
@@ -80,7 +83,7 @@
                 city.maxlength = 50;
                 var state = this.$.state; // Dropdown
                 state.required = true;
-                var zipCode = this.$.zipCode;                
+                var zipCode = this.$.zipCode;
                 zipCode.maxlength = 50;
                 var contactPhone = this.$.contactPhone;
                 contactPhone.required = true;
@@ -108,7 +111,7 @@
                     }
                 });
             },
-            
+
             goLogin: function() {
                 this.fire('showLogin');
             },
@@ -154,7 +157,7 @@
                         '"HowFindUs":"A",' +
                         '"Phone":"' + contactPhone.value + '"}',
                     responseCallback: function(e) {
-                        this.fire('showLogin');  
+                        this.fire('showLogin');
                         this.displayToastMsg("Thanks for your registration. We will contact you soon.");
                     }
                 }, true);

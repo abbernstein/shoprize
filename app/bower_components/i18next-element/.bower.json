@@ -1,0 +1,13 @@
+{
+  "name": "i18next-element",
+  "homepage": "https://github.com/Polymer/i18next-element",
+  "_release": "99ef361ab7",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "99ef361ab75b639834d0b3b08ad505c168e5b418"
+  },
+  "_source": "git://github.com/Polymer/i18next-element.git",
+  "_target": "*",
+  "_originalSource": "Polymer/i18next-element"
+}

@@ -1,0 +1,39 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="i18next-import.html">
+<link rel="import" href="../polymer/polymer.html">
+
+<polymer-element name="i18next-element">
+<script>
+(function() {
+
+  window.i18nResources = {};
+
+  i18n.init({
+    resStore: i18nResources
+  });
+
+  i18n.addResources = function(resStore) {
+    Platform.mixin(i18nResources, resStore);
+  };
+
+  i18n_t = i18n.t;
+
+  PolymerExpressions.prototype.$$ = i18n_t;
+
+  Polymer({
+    $$: function() {
+      return i18n_t.apply(window, arguments)
+    }
+  });
+
+})();
+</script>
+</polymer-element>

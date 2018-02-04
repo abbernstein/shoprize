@@ -8,7 +8,7 @@
 <link rel="import" href="../../bower_components/core-icons/hardware-icons.html"/>
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html"/>
 
-<polymer-element name="mc-preferences-account-payment" extends="mc-ui-base" attributes="payment">    
+<polymer-element name="mc-preferences-account-payment" extends="mc-ui-base" attributes="payment">
     <template>
         <style>
             #payment_list {
@@ -20,7 +20,7 @@
             }
             #wrapper label {
                 margin-bottom: 5px;
-            }  
+            }
             #description label {
                 font-size: 0.8em;
             }
@@ -45,7 +45,9 @@
             }
 
         </style>
-        <section id="payment_list" cross-fade layout vertical>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+      <section id="payment_list" cross-fade layout vertical>
 
             <div layout horizontal center>
                 <h2 flex>{{payment.PackageName}}</h2>

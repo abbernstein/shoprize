@@ -4,4 +4,3 @@ test/temp
 .sass-cache
 .tmp
 test/bower_components/
-app/bower_components/

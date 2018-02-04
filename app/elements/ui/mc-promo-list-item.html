@@ -10,7 +10,7 @@
     <template>
 
         <style>
-           
+
             #promo_list {
                 padding-bottom: 0;
                 border-color: #CCC;
@@ -61,7 +61,10 @@
 
         </style>
 
-        <section id="promo_list" layout horizontal on-tap="{{toggleDetails}}">
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+
+      <section id="promo_list" layout horizontal on-tap="{{toggleDetails}}">
 
             <div id="wrapper" flex layout vertical>
 
@@ -76,7 +79,7 @@
                             <span class="small">[[$$('promo.from')]] {{parseDate(promo.StartDate)}}</span>
                             <span class="small" hidden?="{{!promo.ExpireDate}}">[[$$('promo.to')]] {{parseDate(promo.ExpireDate)}}</span>
                         </div>
-                        
+
                         <core-collapse id="collapse">
                             <section id="more" flex layout vertical>
 
@@ -104,14 +107,14 @@
 
                     <div layout horizontal center-justified>
                         <span class="small" hidden?="{{promo.RedeemLimit<=0}}" title="redeemlimit" ><core-icon icon="shop"></core-icon> {{promo.RedeemLimit}}</span>
-                        <span class="small" title="collected" hidden?="{{promo.Type==='Surprise'}}"><core-icon icon="favorite"></core-icon> {{promo.SavedCount}}</span>                        
+                        <span class="small" title="collected" hidden?="{{promo.Type==='Surprise'}}"><core-icon icon="favorite"></core-icon> {{promo.SavedCount}}</span>
                         <span class="small" title="collected" hidden?="{{promo.Type==='Deal'}}"><core-icon icon="shopping-cart"></core-icon> {{promo.CollectedCount}}</span>
                         <span class="small" title="redeemed" hidden?="{{promo.Type==='Deal'}}"><core-icon icon="shopping-basket"></core-icon> {{promo.RedeemedCount}}</span>
                     </div>
 
                 </div>
 
-                
+
             </div>
             <div layout center horizontal center-justified>
                 <paper-icon-button id="toggleButton" icon="expand-more" on-tap="{{toggleDetails}}"></paper-icon-button>

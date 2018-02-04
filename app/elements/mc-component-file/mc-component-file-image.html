@@ -4,10 +4,12 @@
 <polymer-element name="mc-component-file-image" attributes="picture">
     <template flex>
         <link rel="stylesheet" href="mc-component-file-image.css" />
-        <div class="image-wrapper" flex> 
+      <link rel="stylesheet" href="/styles/main.css"  />
+
+      <div class="image-wrapper" flex>
             <div class="image" style="background-image: url('{{picture}}')"></div>
             <div class="image-cover">
-                <paper-icon-button icon="delete" picture="{{picture}}" on-tap="{{removePicture}}"></paper-icon-button>
+                <core-icon icon="delete" picture="{{picture}}" on-tap="{{removePicture}}"></core-icon>
             </div>
         </div>
     </template>

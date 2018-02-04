@@ -19,33 +19,37 @@
                 -moz-box-sizing: border-box;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
-            }            
+            }
             .small {
                 font-size: 0.6em;
             }
         </style>
-        <core-header-panel fit mode="seamed">
-            
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+      <core-header-panel fit mode="seamed">
+
             <core-toolbar mode="seamed" class="medium-tall deep-purple-bg" hero hero-id="hero.toolbar.shoppers">
-                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <core-icon icon="arrow-forward" on-tap="{{showDashboard}}"></core-icon>
                 <div layout vertical>
                     <span class="small">{{mallName}}</span>
                     <span>{{addressName}}</span>
                 </div>
             </core-toolbar>
 
-            <section class="content-section" layout horizontal flex hero hero-id="hero.content.shoppers">
+            <section class="content-section" layout horizontal flex hero hero-id="hero.content.shoppers" style="display: flex;flex-direction: row">
 
                 <div flex one layout vertical class="with-right-margin">
                     <core-menu class="side-menu" selected="{{selected}}">
-                        <paper-item name="inmall" hero hero-id="hero.toolbar.shoppers.mall" label="[[$$('dashboard.shoppersInMall')]]" icon="maps:local-mall"></paper-item>
+                      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+                      <paper-item name="inmall" hero hero-id="hero.toolbar.shoppers.mall" label="[[$$('dashboard.shoppersInMall')]]" icon="maps:local-mall"></paper-item>
                         <paper-item name="walkins" hero hero-id="hero.toolbar.shoppers.walkins" label="[[$$('dashboard.dailyWalkIns')]]" icon="maps:directions-walk"></paper-item>
                         <paper-item name="instore" hero hero-id="hero.toolbar.shoppers.store" label="[[$$('dashboard.shoppersInStore')]]" icon="store"></paper-item>
                         <paper-item name="loyalmembers" hero hero-id="hero.toolbar.shoppers.loyal" label="[[$$('dashboard.loyalMembers')]]" icon="loyalty"></paper-item>
                     </core-menu>
                 </div>
 
-                <div flex three layout vertical>
+                <div flex three layout vertical style="height:500px">
                     <core-animated-pages flex id="detail" transitions="cross-fade slide-from-bottom">
                         <mc-shoppers-table id="inmall" name="inmall" flex slide-from-bottom></mc-shoppers-table>
                         <mc-shoppers-table id="walkins" name="walkins" flex slide-from-bottom></mc-shoppers-table>

@@ -5,6 +5,7 @@
 <polymer-element name="mc-store-notification" extends="mc-ui-base" attributes="storeId">
 
     <template>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
 
         <div layout horizontal cross-fade>
             <div layout vertical flex id="infos" class="short">
@@ -26,7 +27,7 @@
     <script>
         Polymer("mc-store-notification", {
             initValue:function() {
-                
+
             },
             pushNotification: function () {
                 var validated = true;

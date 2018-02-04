@@ -9,10 +9,14 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html"/>
 <link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html"/>
 <link rel="import" href="../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
 
 <link rel="import" href="mc-ui-base.html" />
 <link rel="import" href="mc-stores-add.html"/>
 <link rel="import" href="mc-stores-listitem.html"/>
+
+
 
 <polymer-element name="mc-stores" extends="mc-ui-base">
 
@@ -23,12 +27,15 @@
                 background-color: #666;
                 color: #FFF;
             }
-        </style>
 
-        <core-header-panel fit mode="seamed">
+        </style>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+
+      <core-header-panel fit mode="seamed">
 
             <core-toolbar class="teal-bg medium-tall" mode="seamed" hero hero-id="hero.toolbar.store">
-                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <core-icon icon="arrow-forward" on-tap="{{showDashboard}}"></core-icon>
                 <span flex>[[$$('dashboard.storeSettings')]]</span>
             </core-toolbar>
 

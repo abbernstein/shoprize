@@ -13,6 +13,8 @@
 <link rel="import" href="../../bower_components/core-menu/core-menu.html" />
 <link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html" />
 <link rel="import" href="../../bower_components/core-item/core-item.html" />
+
+
 <polymer-element name="mc-dashboard" extends='mc-ui-base' layout vertical>
 
     <template>
@@ -24,6 +26,9 @@
                 -moz-box-sizing: border-box;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
+
+              display:flex;
+              flex-direction: column;
             }
 
 
@@ -71,6 +76,7 @@
 
             .dash-item {
                 cursor: pointer;
+              flex:1;
             }
 
             .dash-items {
@@ -79,8 +85,41 @@
 
                 .dash-items .row {
                     margin-left: 12px;
+                  display:flex;
+                  flex-direction: row;
                 }
 
+                [vertical]{
+                  display: flex;
+                  flex-direction: column;
+                }
+                [horizontal]{
+                  display: flex;
+                  flex-direction: row;
+                }
+            [flex]{
+              flex:1
+            }
+
+             [layout][center-justified],  [layout][center-center] {
+              -ms-flex-pack: center;
+              -webkit-justify-content: center;
+              justify-content: center;
+            }
+
+             [layout][center],  [layout][center-center] {
+              -ms-flex-align: center;
+              -webkit-align-items: center;
+              align-items: center;
+            }
+
+            [center]{
+              align-items:center;
+            }
+            [center-center]{
+              justify-content: center;
+              align-items:center
+            }
             .dash-item.not-available {
                 cursor: default;
             }
@@ -198,9 +237,12 @@
 
         </style>
 
+      <!-- from main cs -->
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
         <core-toolbar id="mainheader" class="white-bg" cross-fade slide-down-offscreen>
             <span><img src="../../images/logo.png" class="logo" /></span>
-            <div flex layout horizontal center end-justified id="headingTitle">
+<!--            <div flex layout horizontal center end-justified id="headingTitle" style="justify-content: flex-end">-->
             </div>
             <span id='displayName'></span>
             <a class="badge red-bg" on-tap="{{upgradeAccount}}">[[$$('dashboard.upgrade')]]</a>
@@ -208,7 +250,7 @@
 
         <div class="dash-items" flex cross-fade layout vertical>
 
-            <div layout horizontal flex class="row">
+            <div layout horizontal flex class="row" style="display:flex;flex-direction: row">
 
                 <div class="dash-item" flex two layout vertical>
                     <div class="wrapper" flex layout vertical hero?="{{currentHero==='shoppers'}}" hero-id="hero.content.shoppers">
@@ -217,6 +259,7 @@
                             <div layout horizontal>
                                 <core-dropdown-menu halign="right" hidden?="{{hideAddressSelector}}" halign="right" id="addressSelector" selected="{{selectedTab}}">
                                     <template repeat="{{dashboardResult.AddressDataResults}}">
+
                                         <paper-item label="{{AddressName}}">
                                             <div class="paper-item-label">
                                                 <p>{{MallName}}</p>

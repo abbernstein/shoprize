@@ -8,14 +8,48 @@
 
     <template>
 
-        <div layout horizontal cross-fade>
+      <link rel="stylesheet" href="/styles/main.css"  />
+      <style>
+
+
+        polyfill-next-selector { content: ':host > * [cross-fade]'; }
+        ::content > *  [cross-fade] {
+          -webkit-transition: opacity cubic-bezier(0.4, 0, 0.2, 1);
+          transition: opacity  cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        polyfill-next-selector { content: ':host > * [cross-fade][bg]'; }
+        ::content > * [cross-fade][bg] {
+          -webkit-transition: background-color cubic-bezier(0.4, 0, 0.2, 1);
+          transition: background-color  cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        polyfill-next-selector { content: ':host > * [cross-fade][hero-p]'; }
+        ::content > *  [cross-fade][hero-p] {
+          -webkit-transition: background-color  cubic-bezier(0.4, 0, 0.2, 1);
+          transition: background-color  cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        polyfill-next-selector { content: ':host > .core-selected [cross-fade]'; }
+        ::content > .core-selected  [cross-fade] {
+          opacity: 1;
+        }
+
+        polyfill-next-selector { content: ':host > [animate]:not(.core-selected) [cross-fade]:not([hero-p]):not([bg])'; }
+        ::content > [animate]:not(.core-selected)  [cross-fade]:not([hero-p]):not([bg]) {
+          opacity: 0;
+        }
+
+      </style>
+
+      <div layout horizontal style="display: flex;flex-direction: row" cross-fade>
             <div layout vertical flex id="infos" class="short">
                 <form layout vertical>
 
                     <paper-input label="[[$$('store.storeName')]]" required id="storeName" value="{{store.Name}}" floatinglabel></paper-input>
                     <paper-input label="[[$$('store.website')]]" id="website" value="{{store.Website}}" floatinglabel></paper-input>
                     <mc-component-file type="file" id="logo" label="[[$$('store.logo')]]" imageurls="{{store.Logo}}"></mc-component-file>
-                    
+
                     <section layout horizontal end-justified>
                         <paper-fab on-tap="{{saveStore}}" icon="check"></paper-fab>
                     </section>

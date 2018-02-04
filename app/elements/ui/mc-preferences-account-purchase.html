@@ -12,7 +12,7 @@
 <link rel="import" href="mc-ui-base.html">
 <link rel="import" href="../components/mc-code-library.html"/>
 
-<polymer-element name="mc-preferences-account-purchase" extends="mc-ui-base" attributes="payment">    
+<polymer-element name="mc-preferences-account-purchase" extends="mc-ui-base" attributes="payment">
     <template>
         <style>
             #wrapper label {
@@ -58,13 +58,15 @@
             }
 
         </style>
-        <mc-code-library id="codeLibrary"></mc-code-library>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+      <mc-code-library id="codeLibrary"></mc-code-library>
         <div flex layout vertical>
-            
+
             <core-animated-pages selected="{{currentPage}}" transitions="cross-fade slide-from-bottom">
 
                 <section id="packages" name="packages">
-                    
+
                     <div cross-fade slide-from-bottom>
                         <h2>[[$$('preferences.purchase.orderDetails')]]</h2>
 
@@ -170,7 +172,7 @@
                                     </core-dropdown-menu>
                                 </div>
                                 <paper-input floatinglabel id="securityCode" type="number" label="[[$$('preferences.purchase.securityCode')]]"></paper-input>
-                            
+
                                 <div layout horizontal cross-fade>
                                     <paper-button on-tap="{{previousPage}}" class="link_button">&lt; [[$$('misc.back')]]</paper-button>
                                     <span flex></span>
@@ -359,7 +361,7 @@
                     method: "POST",
                     body: JSON.stringify(obj),
                     responseCallback: function(e) {
-                        // this.fire('showDashboard');  
+                        // this.fire('showDashboard');
                         this.fire("showAccount");
                         this.clearView();
                         this.currentPage = 0;

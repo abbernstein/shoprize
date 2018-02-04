@@ -1,5 +1,7 @@
 ﻿<link rel="import" href="../../bower_components/polymer/polymer.html"/>
 <link rel="import" href="../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
 <link rel="import" href="mc-ui-base.html" />
 
 <polymer-element name="mc-stores-listitem" extends="mc-ui-base" attributes="store">
@@ -26,15 +28,19 @@
                 max-height: 200px;
             }
         </style>
-        <div class="list-item paper-section" layout vertical>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+      <div class="list-item paper-section" layout vertical>
             <paper-shadow z="1"></paper-shadow>
-            <h2>{{store.Name}}</h2>
+        <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+        <h2>{{store.Name}}</h2>
             <div class="logo-wrapper">
                 <img src="{{store.Logo}}" />
             </div>
             <div layout horizontal>
-                <paper-icon-button on-tap="{{deleteStore}}" icon="delete"></paper-icon-button>
-                <paper-icon-button on-tap="{{showStoreDetails}}" icon="create"></paper-icon-button>
+                <core-icon on-tap="{{deleteStore}}" icon="delete"></core-icon>
+                <core-icon on-tap="{{showStoreDetails}}" icon="create"></core-icon>
             </div>
         </div>
         <paper-dialog id="deleteConfirmDialog" transition="paper-dialog-transition-center">
@@ -45,7 +51,7 @@
     </template>
     <script>
         Polymer({
-            
+
             deleteStore:function() {
                 this.$.deleteConfirmDialog.toggle();
             },

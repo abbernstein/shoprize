@@ -23,15 +23,17 @@
                 box-sizing: border-box;
             }
         </style>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
 
-        <core-header-panel fit mode="seamed">
+
+      <core-header-panel fit mode="seamed">
 
             <core-toolbar class="medium-tall indigo-bg" hero hero-id="hero.toolbar.preferences">
-                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <core-icon icon="arrow-forward" on-tap="{{showDashboard}}"></core-icon>
                 <span flex>[[$$('dashboard.preferences')]]</span>
             </core-toolbar>
 
-            <section class="content-section" cross-fade horizontal layout flex hero hero-id="hero.content.preferences">
+            <section class="content-section" cross-fade horizontal layout flex hero hero-id="hero.content.preferences" style="height:700px">
                 <div class="with-right-margin" layout vertical flex one>
                     <core-menu id="selector" class="side-menu" selected="{{selected}}">
                         <paper-item name="profile" label="[[$$('preferences.profile.profile')]]"></paper-item>

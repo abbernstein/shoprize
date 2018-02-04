@@ -16,31 +16,12 @@
 <link rel="import" href="mc-store-basic.html">
 <link rel="import" href="mc-store-beacons.html">
 
+
 <polymer-element name="mc-store" extends="mc-ui-base">
 
     <template>
-        
-        <core-header-panel fit mode="seamed">
-            <core-toolbar class="teal-bg medium-tall" mode="seamed" hero hero-id="hero.toolbar.store">
-                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
-                <span flex>Store settings</span>
-            </core-toolbar>
-            <section class="content-section" cross-fade horizontal layout hero hero-id="hero.content.store">
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
 
-                <div class="with-right-margin" layout vertical flex one>
-                    <core-menu class="side-menu" selected="{{selected}}">
-                        <paper-item name="basicInfo" icon="list" label="Basic Info"></paper-item>
-                        <paper-item name="beacons" icon="device:wifi-tethering" label="Beacons"></paper-item>
-                    </core-menu>
-                </div>
-                <div layout vertical flex three>
-                    <core-animated-pages flex selected="{{selected}}" transitions="cross-fade slide-from-bottom">
-                        <mc-store-basic store="{{store}}" name="basicInfo" id="basicInfo" flex slide-from-bottom></mc-store-basic>
-                        <mc-store-beacons store="{{store}}" name="beacons" id="beacons" flex slide-from-bottom></mc-store-beacons>
-                    </core-animated-pages>
-                </div>
-            </section>
-        </core-header-panel>
 
     </template>
 

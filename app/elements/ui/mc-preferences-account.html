@@ -8,12 +8,14 @@
 <link rel="import" href="mc-ui-base.html">
 <link rel="import" href="mc-preferences-account-payment.html">
 
-<polymer-element name="mc-preferences-account" extends="mc-ui-base">    
+<polymer-element name="mc-preferences-account" extends="mc-ui-base">
     <template>
-        <p cross-fade hidden?="{{sourceData && sourceData.length>0}}">You don't have any subscription currently, please  <span class="bold"><paper-button class="badge red-bg" on-tap="{{doPurchase}}">Upgrade</paper-button></span> you account.</p>
-        <section  hidden?="{{!(sourceData && sourceData.length>0)}}"  cross-fade>            
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+      <p cross-fade hidden?="{{sourceData && sourceData.length>0}}">You don't have any subscription currently, please  <span class="bold"><paper-button class="badge red-bg" on-tap="{{doPurchase}}">Upgrade</paper-button></span> you account.</p>
+        <section  hidden?="{{!(sourceData && sourceData.length>0)}}"  cross-fade>
             <template repeat="{{item in sourceData}}">
-                <mc-preferences-account-payment payment="{{item}}"></mc-preferences-account-payment>    
+                <mc-preferences-account-payment payment="{{item}}"></mc-preferences-account-payment>
             </template>
         </section>
     </template>

@@ -24,7 +24,8 @@
             :host {
                 width: 100%;
                 height: 100%;
-                position: absolute;
+               /* position: absolute;*/
+              overflow: auto;
                 -moz-box-sizing: border-box;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
@@ -65,9 +66,12 @@
 
         </style>
 
-        <core-header-panel fit mode="seamed">
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+
+      <core-header-panel fit mode="seamed">
             <core-toolbar class="{{ {'red-bg':type=='surprise', 'purple-bg':type=='deal'} | tokenList}} medium-tall" hero hero-id="hero.toolbar.surprises">
-                <paper-icon-button icon="arrow-forward" on-tap="{{onGoBack}}"></paper-icon-button>
+                <core-icon icon="arrow-forward" on-tap="{{onGoBack}}"></core-icon>
                 <span flex>{{title}}</span>
             </core-toolbar>
 
@@ -136,7 +140,7 @@
                         </div>
 
                         <div class="form-group" hidden?="{{type=='deal'}}">
-                            <paper-input id="availableTime" label="[[$$('promo.availableHours')]]" type="number" value="{{availableHours}}" floatinglabel required?="{{type=='surprise'}}"></paper-input>                            
+                            <paper-input id="availableTime" label="[[$$('promo.availableHours')]]" type="number" value="{{availableHours}}" floatinglabel required?="{{type=='surprise'}}"></paper-input>
                             <label class="control-label">[[$$('promo.availableHoursDesc')]]</label>
                         </div>
 

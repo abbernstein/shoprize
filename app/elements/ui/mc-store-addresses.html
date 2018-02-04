@@ -7,11 +7,12 @@
 
     <template>
 
+
         <style>
         :host {
-            width: 100%;
+           /* width: 100%;
             height: 100%;
-            position: absolute;
+            position: absolute;*/
             -webkit-box-sizing: border-box;
             -moz-box-sizing: border-box;
             box-sizing: border-box;
@@ -45,11 +46,14 @@
         }
         </style>
 
-        <div layout horizontal cross-fade>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+
+      <div layout horizontal cross-fade style="flex-direction: row;display: flex">
 
             <div flex one vertical layout class="with-right-margin" cross-fade>
                 <div layout horizontal>
-                    <paper-icon-button icon="add" label="Add Address" on-tap="{{showAddAddressDialog}}"></paper-icon-button>
+                    <core-icon icon="add" label="Add Address" on-tap="{{showAddAddressDialog}}"></core-icon>
                 </div>
                 <core-menu id="address_list" on-core-select="{{onAddressSelected}}" selected="{{selected}}">
                     <template repeat="{{address in store.Addresses}}">
@@ -87,7 +91,7 @@
                         <div layout horizontal class="action-bar">
                             <paper-button on-tap="{{saveAddress}}">[[$$('misc.submit')]]</paper-button>
                             <span flex></span>
-                            <paper-icon-button icon="delete" on-tap="{{showDeleteAddressDialog}}"></paper-icon-button>
+                            <core-icon icon="delete" on-tap="{{showDeleteAddressDialog}}"></core-icon>
                         </div>
                     </section>
 
@@ -109,7 +113,7 @@
                     </div>
 
                     <div layout horizontal class="action-bar">
-                        <paper-icon-button icon="add" on-tap="{{showAddBeaconDialog}}"></paper-icon-button>
+                        <core-icon icon="add" on-tap="{{showAddBeaconDialog}}"></core-icon>
                     </div>
 
                 </div>

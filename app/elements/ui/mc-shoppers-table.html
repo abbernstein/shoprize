@@ -1,9 +1,12 @@
 ﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-shadow/paper-shadow.html">
 <link rel="import" href="mc-ui-base.html">
+
 <polymer-element name="mc-shoppers-table" extends='mc-ui-base'>
 	<template>
-        <div cross-fade>
+    <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+    <div cross-fade>
             <p hidden?="{{sourceData && sourceData.length>0}}">[[$$('misc.noRecord')]]</p>
             <div class="paper-section" hidden?="{{!(sourceData && sourceData.length>0)}}" cross-fade>
                 <paper-shadow z="1"></paper-shadow>

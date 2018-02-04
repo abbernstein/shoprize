@@ -5,12 +5,12 @@
 <link rel="import" href="mc-store-addresses.html"/>
 <link rel="import" href="mc-store-notification.html"/>
 
-<polymer-element name="mc-stores-details" extends="mc-ui-base" attributes="store">
+<polymer-element name="mc-stores-details" extends="mc-ui-base" attributes="store" style="overflow: auto">
 
     <template>
-        
+
         <style>
-            
+
             :host {
                 width: 100%;
                 height: 100%;
@@ -24,13 +24,15 @@
                  background-color: #33aba0;
              }
         </style>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
 
-        <core-header-panel fit mode="seamed">
+
+      <core-header-panel fit mode="seamed">
 
             <core-toolbar class="teal-bg medium-tall" mode="seamed" hero hero-id="hero.toolbar.store">
-                <paper-icon-button icon="arrow-forward" on-tap="{{showStores}}"></paper-icon-button>
+                <core-icon icon="arrow-forward" on-tap="{{showStores}}"></core-icon>
                 <span flex>{{store.Name}}</span>
-                <div class="bottom fit" horizontal layout>
+                <div class="bottom fit" horizontal layout style="display: none">
                     <paper-tabs selected="{{selected}}" id="paperTabs" on-core-select="{{onTabSelected}}" flex noink nobar>
                         <paper-tab id="basic">[[$$('store.basicInfo')]]</paper-tab>
                         <paper-tab id="addresses">[[$$('store.address')]]</paper-tab>
@@ -40,11 +42,18 @@
             </core-toolbar>
 
             <section class="content-section" cross-fade horizontal layout hero hero-id="hero.content.store">
-                <core-animated-pages flex id="pager" transitions="cross-fade">
+              <h2>ניהול פרטי חנות</h2>
+
+              <!--<core-animated-pages flex id="pager" transitions="cross-fade">-->
                     <mc-store-basic id="basic" name="basic"></mc-store-basic>
+              <hr />
+              <h2>ניהול כתובות</h2>
                     <mc-store-addresses id="addresses" name="addresses"></mc-store-addresses>
-                    <mc-store-notification id="notification" name="notification"></mc-store-notification>
-                </core-animated-pages>
+              <hr />
+              <h2>ניהול הודעות</h2>
+
+              <mc-store-notification id="notification" name="notification"></mc-store-notification>
+                <!--</core-animated-pages>-->
             </section>
         </core-header-panel>
     </template>
@@ -54,37 +63,43 @@
             showStores: function() {
                 this.fire("showStore");
             },
+          ready: function() {
+           /* this.showBasic();
+            this.showStores();
+            this.showAddresses()
+            this.showNotification();*/
+          },
             onTabSelected: function(e, detail, sender) {
-                if (detail.isSelected) {
-                    if (detail.item.id === 'basic') {
+             //   if (detail.isSelected) {
+              //      if (detail.item.id === 'basic') {
                         this.showBasic();
-                    }
-                    if (detail.item.id === 'addresses') {
+              //      }
+               //     if (detail.item.id === 'addresses') {
                         this.showAddresses();
-                    }
-                    if (detail.item.id === 'notification') {
+               //     }
+               //     if (detail.item.id === 'notification') {
                         this.showNotification();
-                    }
-                }
+                //    }
+              //  }
             },
             publish: {
                 showBasic: function () {
                    this.selected = 0;
-                    this.$.pager.selected = 'basic';
+                    //this.$.pager.selected = 'basic';
                     this.$.basic.store = this.store;
                 },
 
                 showAddresses: function () {
                     this.selected = 1;
-                    this.$.pager.selected = 'addresses';
+                   // this.$.pager.selected = 'addresses';
                     this.$.addresses.store = this.store;
                     this.$.addresses.loadMalls();
                 },
 
                 showNotification: function () {
                     this.selected = 2;
-                    this.$.pager.selected = 'notification';
-                    this.$.notification.storeId = this.store.StoreId;
+                    //this.$.pager.selected = 'notification';
+                   // this.$.notification.storeId = this.store.StoreId;
                 },
             }
         });

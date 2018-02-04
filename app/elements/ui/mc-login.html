@@ -24,24 +24,46 @@
                 padding-right: 60px;
             }
 
+          .login-box{
+            position: relative;
+            overflow: visible;
+            width: 510px;
+            background-color: white;
+            margin-right: 25px;
+            margin-top: 25px;
+          }
+
+            .login-box paper-input{
+              /*margin-right:20px;*/
+            }
+
+          .login-box paper-checkbox{
+            display:block;
+            /*margin-right:20px;*/
+            margin-top:28px;
+          }
+
         </style>
 
-        <core-header-panel mode="seamed" fit>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+
+      <core-header-panel mode="seamed" fit>
             <core-toolbar class="medium-tall purple-bg" cross-fade slide-down-offscreen>
                 <span class="title" flex>[[$$('login.login')]]</span>
             </core-toolbar>
 
             <section class="content-section" layout horizontal cross-fade>
-                <div class="paper-section" layout vertical flex>
+                <div class="paper-section login-box" layout vertical flex>
                     <paper-shadow z="1"></paper-shadow>
-                    <paper-input floatinglabel id="username" label="[[$$('login.username')]]"></paper-input>
-                    <paper-input floatinglabel id="password" type="password" label="[[$$('login.password')]]"></paper-input>            
+                    <paper-input  id="username" label="[[$$('login.username')]]"></paper-input>
+                    <paper-input  id="password" type="password" label="[[$$('login.password')]]"></paper-input>
                     <paper-checkbox label="[[$$('login.rememberMe')]]" id="remember_checkbox"></paper-checkbox>
-                    
-                   
-                    
+
+
+
                     <div layout horizontal center>
-                        <paper-button class="link_button" on-tap="{{goRegister}}">[[$$('login.register')]]</paper-button>   
+                        <paper-button class="link_button" on-tap="{{goRegister}}">[[$$('login.register')]]</paper-button>
                         <span flex></span>
                         <paper-fab layout horizontal end-justified icon="check" on-tap="{{handleLogin}}"></paper-fab>
                     </div>
@@ -85,7 +107,7 @@
                 this.$.username.value ='';
                 this.$.password.value='';
             },
-            doLogin: function(username, password, rememberme) {                
+            doLogin: function(username, password, rememberme) {
                 this.ajaxGo({
                     url: 'token',
                     contentType: 'application/x-www-form-urlencoded',
@@ -93,16 +115,16 @@
                     method: "POST",
                     responseCallback: function(e) {
                         if(e.detail.response && e.detail.response.access_token && e.detail.response.access_token !='undefined'){
-                            this.clearCookie();                            
-                            if (rememberme) {       
+                            this.clearCookie();
+                            if (rememberme) {
                                 this.saveCookie({ "name": 'username', "value": username, "expires": new Date().setFullYear(new Date().getFullYear() + 1) });
                                 this.saveCookie({ "name": 'access_token', "value": e.detail.response.access_token, "expires": new Date().setFullYear(new Date().getFullYear() + 1) })
-                            } 
+                            }
                             else{
                                  this.saveCookie({ "name": 'username', "value": username, "expires": new Date().setMinutes(new Date().getMinutes() + 1) })
                                  //this.saveCookie({ "name": 'access_token', "value": e.detail.response.access_token, "expires": e.detail.response[".expires"] })
                                  this.saveCookie({ "name": 'access_token', "value": e.detail.response.access_token, "expires": new Date().setMinutes(new Date().getMinutes() + 1) })
-                            }   
+                            }
                             this.fire('showDashboard');
                         }
                     }
@@ -115,11 +137,11 @@
                 },true);
             },
             handleLogin: function() {
-                // this.fire('showDashboard');                
+                // this.fire('showDashboard');
                 var username = this.$.username.value;
                 var password = this.$.password.value;
                 var rememberme = this.$.remember_checkbox.checked;
-                this.doLogin(username,password,rememberme);  
+                this.doLogin(username,password,rememberme);
             }
         });
     </script>

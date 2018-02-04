@@ -10,7 +10,7 @@
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html"/>
 
 <polymer-element name="mc-preferences-profile" extends="mc-ui-base">
-    
+
     <template>
         <style>
             :host {
@@ -23,8 +23,10 @@
             }
 
         </style>
-        
-        <section class="short" cross-fade flex layout vertical>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+
+      <section class="short" cross-fade flex layout vertical>
             <paper-input id="contactName" label="[[$$('preferences.profile.contactName')]]" floatinglabel></paper-input>
             <paper-input id="contactPhone" label="[[$$('preferences.profile.contactPhone')]]" type="phone" floatinglabel></paper-input>
             <paper-input id="contactEmail" label="[[$$('preferences.profile.contactEmail')]]" type="email" floatinglabel></paper-input>
@@ -32,9 +34,9 @@
             <div layout horizontal end-justified>
                 <paper-fab disabled?="{{loading}}" icon="check" on-tap={{updateProfile}}></paper-fab>
             </div>
-        </section>      
+        </section>
     </template>
-    
+
     <script>
         Polymer('mc-preferences-profile', {
             loading:false,

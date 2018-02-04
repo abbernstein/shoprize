@@ -22,14 +22,16 @@
                 box-sizing: border-box;
             }
         </style>
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
 
-        <core-header-panel fit mode="seamed">
+
+      <core-header-panel fit mode="seamed">
             <core-toolbar class="medium-tall purple-bg" hero hero-id="hero.toolbar.deals">
-                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <core-icon icon="arrow-forward" on-tap="{{showDashboard}}"></core-icon>
                 <span flex>[[$$('dashboard.deals')]]</span>
             </core-toolbar>
 
-            <section class="content-section" cross-fade layout horizontal flex hero hero-id="hero.content.deals">
+            <section class="content-section" cross-fade layout horizontal flex hero hero-id="hero.content.deals" style="height:700px">
 
                 <section class="with-right-margin" flex one layout vertical>
                     <core-menu id="sideMenu" class="side-menu" selected="{{selected}}">

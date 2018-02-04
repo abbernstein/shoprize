@@ -11,7 +11,7 @@
 <link rel="import" href="mc-promo-list.html">
 <link rel="import" href="mc-ui-base.html">
 
-<polymer-element name="mc-surprises" extends="mc-ui-base" vertical layout>    
+<polymer-element name="mc-surprises" extends="mc-ui-base" vertical layout>
     <template>
         <style>
 
@@ -22,17 +22,19 @@
                 -moz-box-sizing: border-box;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
-            }            
+            }
 
         </style>
-        <core-header-panel fit mode="seamed">
+      <link rel="stylesheet" href="/styles/main.css" shim-shadowdom />
+
+      <core-header-panel fit mode="seamed">
             <core-toolbar class="red-bg medium-tall" hero hero-id="hero.toolbar.surprises" mode="seamed">
-                <paper-icon-button icon="arrow-forward" on-tap="{{showDashboard}}"></paper-icon-button>
+                <core-icon icon="arrow-forward" on-tap="{{showDashboard}}"></core-icon>
                 <span flex>[[$$('dashboard.surprises')]]</span>
             </core-toolbar>
 
-            <section class="content-section scroll" cross-fade layout horizontal flex hero hero-id="hero.content.surprises">
-                
+            <section class="content-section scroll" cross-fade layout horizontal flex hero hero-id="hero.content.surprises" style="height:700px">
+
                 <section class="with-right-margin" flex one layout vertical>
                     <core-menu class="side-menu" selected="{{selected}}">
                         <paper-item icon="check" label="[[$$('promo.active')]]"></paper-item>
@@ -51,7 +53,7 @@
 
             </section>
         </core-header-panel>
-                
+
         <paper-fab class="main-action-button" cross-fade slide-from-bottom icon="add" on-tap="{{showAddSurprise}}"></paper-fab>
 
     </template>

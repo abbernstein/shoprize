@@ -8,6 +8,13 @@
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+      <script>
+        // Force all polyfills on
+        if (window.customElements) window.customElements.forcePolyfill = true;
+        ShadyDOM = { force: false };
+        ShadyCSS = { shimcssproperties: false};
+      </script>
+
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <!-- build:css styles/main.css -->
         <link rel="stylesheet" href="styles/main.css" shim-shadowdom />
